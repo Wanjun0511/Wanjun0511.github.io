@@ -271,7 +271,7 @@ tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
 <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
 
-<h2 id="一、-概述"><a href="#一、-概述" class="headerlink" title="一、 概述"></a>一、 概述</h2><p>强化学习算法可以分为三大类：value based, policy based 和 actor critic。常见的是以DQN为首的value based算法，这种算法中只有一个值函数网络，没有policy网络，以及以DDPG,TRPO为首的actor-critic算法，这种算法中既有值函数网络，又有policy网络。</p>
+<h2 id="一、-概述"><a href="#一、-概述" class="headerlink" title="一、 概述"></a>一、 概述</h2><p>强化学习算法可以分为三大类：value based, policy based 和 actor critic。常见的是以DQN为代表的value based算法，这种算法中只有一个值函数网络，没有policy网络，以及以DDPG,TRPO为代表的actor-critic算法，这种算法中既有值函数网络，又有policy网络。</p>
 <p>说到DQN中有值函数网络，这里简单介绍一下强化学习中的一个概念，叫<strong>值函数近似</strong>。在<a href="https://wanjun0511.github.io/2017/11/04/强化学习-基本概念/" target="_blank" rel="external">基本概念</a>这篇中有讲过，一个state action pair $(s, a)$对应一个值函数$Q(s, a)$。理论上对于任意的$(s, a)$我们都可以由公式求出它的值函数，即用一个查询表lookup table来表示值函数。但是当state或action的个数过多时，分别去求每一个值函数会很慢。因此我们用函数近似的方式去估计值函数：</p>
 <script type="math/tex; mode=display">\hat{Q}(s, a, w) \approx Q_\pi(s, a)</script>
         
