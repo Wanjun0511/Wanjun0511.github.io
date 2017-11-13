@@ -8,22 +8,22 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>强化学习—DQN算法原理详解 | Wanjun&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="一、 概述强化学习算法可以分为三大类：value based, policy based 和 actor critic。常见的是以DQN为代表的value based算法，这种算法中只有一个值函数网络，没有policy网络，以及以DDPG,TRPO为代表的actor-critic算法，这种算法中既有值函数网络，又有policy网络。 说到DQN中有值函数网络，这里简单介绍一下强化学习中的一个">
+  <meta name="description" content="MathJax.Hub.Config({ tex2jax: {inlineMath: [[&apos;$&apos;,&apos;$&apos;], [&apos;\\(&apos;,&apos;\\)&apos;]]} });      一、 概述强化学习算法可以分为三大类：value based, policy based 和 actor critic。常见的是以DQN为代表的value based算法，这种算法中只有一个值函数网络，没有policy网络，以及以DDPG">
 <meta name="keywords" content="强化学习">
 <meta property="og:type" content="article">
 <meta property="og:title" content="强化学习—DQN算法原理详解">
 <meta property="og:url" content="http://yoursite.com/2017/11/05/DQN/index.html">
 <meta property="og:site_name" content="Wanjun&#39;s blog">
-<meta property="og:description" content="一、 概述强化学习算法可以分为三大类：value based, policy based 和 actor critic。常见的是以DQN为代表的value based算法，这种算法中只有一个值函数网络，没有policy网络，以及以DDPG,TRPO为代表的actor-critic算法，这种算法中既有值函数网络，又有policy网络。 说到DQN中有值函数网络，这里简单介绍一下强化学习中的一个">
+<meta property="og:description" content="MathJax.Hub.Config({ tex2jax: {inlineMath: [[&apos;$&apos;,&apos;$&apos;], [&apos;\\(&apos;,&apos;\\)&apos;]]} });      一、 概述强化学习算法可以分为三大类：value based, policy based 和 actor critic。常见的是以DQN为代表的value based算法，这种算法中只有一个值函数网络，没有policy网络，以及以DDPG">
 <meta property="og:image" content="http://yoursite.com/2017/11/05/DQN/MC.png">
 <meta property="og:image" content="http://yoursite.com/2017/11/05/DQN/TD.png">
 <meta property="og:image" content="http://yoursite.com/2017/11/05/DQN/sarsa.png">
 <meta property="og:image" content="http://yoursite.com/2017/11/05/DQN/qlearning.png">
 <meta property="og:image" content="http://yoursite.com/2017/11/05/DQN/dqn.png">
-<meta property="og:updated_time" content="2017-11-12T16:23:24.000Z">
+<meta property="og:updated_time" content="2017-11-13T15:42:46.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="强化学习—DQN算法原理详解">
-<meta name="twitter:description" content="一、 概述强化学习算法可以分为三大类：value based, policy based 和 actor critic。常见的是以DQN为代表的value based算法，这种算法中只有一个值函数网络，没有policy网络，以及以DDPG,TRPO为代表的actor-critic算法，这种算法中既有值函数网络，又有policy网络。 说到DQN中有值函数网络，这里简单介绍一下强化学习中的一个">
+<meta name="twitter:description" content="MathJax.Hub.Config({ tex2jax: {inlineMath: [[&apos;$&apos;,&apos;$&apos;], [&apos;\\(&apos;,&apos;\\)&apos;]]} });      一、 概述强化学习算法可以分为三大类：value based, policy based 和 actor critic。常见的是以DQN为代表的value based算法，这种算法中只有一个值函数网络，没有policy网络，以及以DDPG">
 <meta name="twitter:image" content="http://yoursite.com/2017/11/05/DQN/MC.png">
   
     <link rel="alternative" href="/atom.xml" title="Wanjun&#39;s blog" type="application/atom+xml">
@@ -194,7 +194,13 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+        <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+
+<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
 
 <h2 id="一、-概述"><a href="#一、-概述" class="headerlink" title="一、 概述"></a>一、 概述</h2><p>强化学习算法可以分为三大类：value based, policy based 和 actor critic。常见的是以DQN为代表的value based算法，这种算法中只有一个值函数网络，没有policy网络，以及以DDPG,TRPO为代表的actor-critic算法，这种算法中既有值函数网络，又有policy网络。</p>
@@ -216,8 +222,7 @@
 </ul>
 <h4 id="2-Temporal-Difference-SarSa"><a href="#2-Temporal-Difference-SarSa" class="headerlink" title="(2) Temporal Difference  / SarSa"></a>(2) Temporal Difference  / SarSa</h4><img src="/2017/11/05/DQN/TD.png" title="TD">  
 <ul>
-<li>与MC不一样的是，TD不需要完整的样本，它只依赖下一个step的值函数，即它用$V(S_{t+1})$ 去更新$V(S_t)$ (TD)  </li>
-<li>或用$Q(S<em>{t+1}, a</em>{t+1})$ 去更新$Q(S_t, a_t)$ (SarSa) </li>
+<li>与MC不一样的是，TD不需要完整的样本，它只依赖下一个step的值函数，即它用V(S<sub>t+1</sub>) 去更新 V(S<sub>t</sub>) (TD), 或用 Q(S<sub>t+1</sub>, a<sub>t+1</sub>) 去更新 Q(S<sub>t</sub>, a<sub>t</sub>) (SarSa) </li>
 <li>它不用等到episode结束，每走一步就可以更新值函数。  </li>
 <li>它不是用的真实的return值来更新值函数，而是用的一个估计值去更新另一个估计值的思想。  </li>
 </ul>
@@ -225,14 +230,23 @@
 <p><strong>DQN属于Model Free的强化学习算法，它需要采样</strong>。且同SarSa类似，只依赖下一个step的值函数。但它更新值函数的方式与SarSa又有所不同。下面介绍从SarSa到Q-Learning再到DQN的更新值函数的方式。</p>
 <h4 id="1-SarSa"><a href="#1-SarSa" class="headerlink" title="(1) SarSa"></a>(1) SarSa</h4><img src="/2017/11/05/DQN/sarsa.png" title="sarsa">  
 <p>SarSa中更新值函数的公式为：</p>
-<script type="math/tex; mode=display">Q(s, a) \leftarrow Q(s, a) + \alpha [R + \gamma Q(s', a') - Q(s, a)]</script><p>也称它的<strong>target</strong>是 $R<sub>t+1</sub> + \gamma Q(s<sub>t+1</sub>, a<sub>t+1</sub>)$。理解这个target代表的意义：<br>\begin{equation}\begin{split}<br>V(s) &amp;= E[G<em>t | S_t = s]\<br>&amp;= E[R</em>{t+1} + \gamma G<em>{t+1} | S_t=s]\<br>&amp;= E[R</em>{t+1} + \gamma V(S_{t+1}) | S_t=s]<br>\end{split}\end{equation}<br>将V换成Q的话我们可以看到，SarSa target $R<sub>t+1</sub> + \gamma Q(s<sub>t+1</sub>, a<sub>t+1</sub>)$ 是 $Q(S<sub>t</sub>, a<sub>t</sub>)$的估计值。</p>
+<script type="math/tex; mode=display">Q(s, a) \leftarrow Q(s, a) + \alpha [R + \gamma Q(s', a') - Q(s, a)]</script><p>也称它的<strong>target</strong>是 R<sub>t+1</sub>+ $\gamma$ Q(s<sub>t+1</sub>, a<sub>t+1</sub>)。理解这个target代表的意义：</p>
+<script type="math/tex; mode=display">
+\begin{equation}
+\begin{split}
+V(s) &= E[G_t | S_t = s] \\
+&= E[R_{t+1} + \gamma G_{t+1} | S_t=s] \\ 
+&= E[R_{t+1} + \gamma V(S_{t+1}) | S_t=s]
+\end{split}
+\nonumber
+\end{equation}</script><p>将V换成Q的话我们可以看到，SarSa target R<sub>t+1</sub> + $\gamma$ Q(s<sub>t+1</sub>, a<sub>t+1</sub>) 是 Q(S<sub>t</sub>, a<sub>t</sub>)的估计值。</p>
 <p><strong>在值函数近似中，我们都是使用target来替代真实的值函数，即Loss中的真实值。</strong>  </p>
-<p>前面说过DQN是使用$\epsilon-greedy$策略来输出action，SarSa和Q-Learning也是。SarSa中使用$\epsilon-greedy$策略生成action $a<sub>t+1</sub>$，随即又用 $a<sub>t+1</sub>$处对应的值函数来计算target，更新上一步的值函数。这种学习方式又称为<strong>On-policy</strong>。  </p>
+<p>前面说过DQN是使用$\epsilon-greedy$策略来输出action，SarSa和Q-Learning也是。SarSa中使用$\epsilon-greedy$策略生成action a<sub>t+1</sub>，随即又用 a<sub>t+1</sub>处对应的值函数来计算target，更新上一步的值函数。这种学习方式又称为<strong>On-policy</strong>。  </p>
 <p>SarSa属于On-policy Learning，而Q-Learning属于Off-policy Learning。</p>
 <h4 id="2-Q-Learning"><a href="#2-Q-Learning" class="headerlink" title="(2) Q-Learning"></a>(2) Q-Learning</h4><img src="/2017/11/05/DQN/qlearning.png" title="qlearning">  
-<p>Q-Learning的target是 $R<sub>t+1</sub> + \gamma max<sub>a’</sub> Q(s<sub>t+1</sub>, a’)$。它使用$\epsilon-greedy$策略来生成action $a<sub>t+1</sub>$，但用来计算target的action却不一定是$a<sub>t+1</sub>$，而是使得 $Q(S<sub>t+1</sub>, a)$最大的action。这种产生行为的策略和进行评估的策略不一样的方法称为Off-policy方法。对于Q-Learning来说，产生行为的策略是$\epsilon-greedy$，而进行评估的策略是greedy。  </p>
+<p>Q-Learning的target是 R<sub>t+1</sub> + $\gamma$ max<sub>a’</sub> Q(s<sub>t+1</sub>, a’)$。它使用 $\epsilon-greedy$策略来生成action a<sub>t+1</sub>，但用来计算target的action却不一定是a<sub>t+1</sub>，而是使得 Q(S<sub>t+1</sub>, a)最大的action。这种产生行为的策略和进行评估的策略不一样的方法称为Off-policy方法。对于Q-Learning来说，产生行为的策略是$\epsilon-greedy$，而进行评估的策略是greedy。  </p>
 <h4 id="3-DQN"><a href="#3-DQN" class="headerlink" title="(3) DQN"></a>(3) DQN</h4><p>Off-policy是Q-Learning的特点，DQN中也延用了这一特点。而不同的是，Q-Learning中用来计算target和预测值的Q是同一个Q，也就是说使用了相同的神经网络。这样带来的一个问题就是，每次更新神经网络的时候，target也都会更新，这样会容易导致参数不收敛。回忆在有监督学习中，标签label都是固定的，不会随着参数的更新而改变。  </p>
-<p>因此DQN在原来的Q网络的基础上又引入了一个<strong>target Q网络</strong>，即用来计算target的网络。它和Q网络结构一样，初始的权重也一样，只是Q网络每次迭代都会更新，而target Q网络是每隔一段时间才会更新。DQN的target是 $R<sub>t+1</sub> + \gamma {max}_{a’}Q(s<sub>t+1</sub>, a’; \vec\omega^-)$。用$\vec\omega^-$表示它比Q网络的权重$\vec\omega$更新得要慢一些。</p>
+<p>因此DQN在原来的Q网络的基础上又引入了一个<strong>target Q网络</strong>，即用来计算target的网络。它和Q网络结构一样，初始的权重也一样，只是Q网络每次迭代都会更新，而target Q网络是每隔一段时间才会更新。DQN的target是 R<sub>t+1</sub> + $\gamma$ max<sub>a’</sub> Q(s<sub>t+1</sub>, a’; $\vec\omega^-$)$。用 $\vec\omega^-$表示它比Q网络的权重$\vec\omega$更新得要慢一些。</p>
 <p>理解了DQN的target之后也就可以理解DQN的Loss Function了。</p>
 <h3 id="2、DQN所做的改进"><a href="#2、DQN所做的改进" class="headerlink" title="2、DQN所做的改进"></a>2、DQN所做的改进</h3><p>相比于Q-Learning，DQN做的改进：一个是使用了卷积神经网络来逼近行为值函数，一个是使用了target Q network来更新target，还有一个是使用了经验回放Experience replay。  </p>
 <p>由于在强化学习中，我们得到的观测数据是有序的，step by step的，用这样的数据去更新神经网络的参数会有问题。回忆在有监督学习中，数据之间都是独立的。因此DQN中使用经验回放，即用一个Memory来存储经历过的数据，每次更新参数的时候从Memory中抽取一部分的数据来用于更新，以此来打破数据间的关联。</p>
@@ -244,10 +258,10 @@
 <li>初始化initial state $S_1$;  </li>
 <li>循环遍历step =1,2,…, T:    <ul>
 <li>用$\epsilon-greedy$策略生成action $a_t$：以$\epsilon$概率选择一个随机的action，或选择$a_t = max_a Q(S_t, a; \omega)$;  </li>
-<li>执行action $a<sub>t</sub>$，接收reward $r<sub>t</sub>$及新的state $S<sub>t+1</sub>$;  </li>
-<li>将transition样本 $(S_t, a_t, r_t, S<sub>t+1</sub>)$存入D中；  </li>
-<li>从D中随机抽取一个minibatch的transitions $(S_j, a_j, r_j, S<sub>j+1</sub>)$；  </li>
-<li>令$y<em>j = r_j$，如果$j+1$步是terminal的话；否则，令$y_j = r_j + \gamma {max}</em>{a’}Q(s<sub>t+1</sub>, a’; \vec\omega^-)$；  </li>
+<li>执行action a<sub>t</sub>，接收reward r<sub>t</sub>及新的state $S_{t+1}$;  </li>
+<li>将transition样本 (S<sub>t</sub>, a<sub>t</sub>, r<sub>t</sub>, S<sub>t+1</sub>)存入D中；  </li>
+<li>从D中随机抽取一个minibatch的transitions (S<sub>j</sub>, a<sub>j</sub>, r<sub>j</sub>, S<sub>j+1</sub>)；  </li>
+<li>令y<sub>j</sub> = r<sub>j</sub>，如果j+1步是terminal的话；否则，令<script type="math/tex; mode=display">y_j = r_j + \gamma {max}_{a'}Q(s_{t+1}, a'; \vec\omega^-)</script></li>
 <li>对$(y_j - Q(S_t, a_j; \omega))^2$关于$\omega$使用梯度下降法进行更新；  </li>
 <li>每隔C steps更新target Q网络，$\omega^- = \omega$。  </li>
 </ul>
@@ -505,25 +519,43 @@ toISOString:function(){if(!isFinite(o.call(this)))throw RangeError("Invalid time
 getOwnMetadataKeys:function(t){return o(i(t),arguments.length<2?void 0:u(arguments[1]))}})},function(t,n,r){var e=r(54),i=r(2),o=e.get,u=e.key;e.exp({getOwnMetadata:function(t,n){return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){var e=r(54),i=r(2),o=r(32),u=e.has,c=e.key,f=function(t,n,r){if(u(t,n,r))return!0;var e=o(n);return null!==e&&f(t,e,r)};e.exp({hasMetadata:function(t,n){return f(t,i(n),arguments.length<3?void 0:c(arguments[2]))}})},function(t,n,r){var e=r(54),i=r(2),o=e.has,u=e.key;e.exp({hasOwnMetadata:function(t,n){return o(t,i(n),arguments.length<3?void 0:u(arguments[2]))}})},function(t,n,r){var e=r(54),i=r(2),o=r(26),u=e.key,c=e.set;e.exp({metadata:function(t,n){return function(r,e){c(t,n,(void 0!==e?i:o)(r),u(e))}}})},function(t,n,r){var e=r(1);e(e.P+e.R,"Set",{toJSON:r(165)("Set")})},function(t,n,r){"use strict";var e=r(1),i=r(147)(!0);e(e.P,"String",{at:function(t){return i(this,t)}})},function(t,n,r){"use strict";var e=r(1),i=r(46),o=r(16),u=r(122),c=r(120),f=RegExp.prototype,a=function(t,n){this._r=t,this._s=n};r(139)(a,"RegExp String",function(){var t=this._r.exec(this._s);return{value:t,done:null===t}}),e(e.P,"String",{matchAll:function(t){if(i(this),!u(t))throw TypeError(t+" is not a regexp!");var n=String(this),r="flags"in f?String(t.flags):c.call(t),e=new RegExp(t.source,~r.indexOf("g")?r:"g"+r);return e.lastIndex=o(t.lastIndex),new a(e,n)}})},function(t,n,r){"use strict";var e=r(1),i=r(181);e(e.P,"String",{padEnd:function(t){return i(this,t,arguments.length>1?arguments[1]:void 0,!1)}})},function(t,n,r){"use strict";var e=r(1),i=r(181);e(e.P,"String",{padStart:function(t){return i(this,t,arguments.length>1?arguments[1]:void 0,!0)}})},function(t,n,r){"use strict";r(82)("trimLeft",function(t){return function(){return t(this,1)}},"trimStart")},function(t,n,r){"use strict";r(82)("trimRight",function(t){return function(){return t(this,2)}},"trimEnd")},function(t,n,r){r(153)("asyncIterator")},function(t,n,r){r(153)("observable")},function(t,n,r){var e=r(1);e(e.S,"System",{global:r(3)})},function(t,n,r){for(var e=r(155),i=r(28),o=r(3),u=r(27),c=r(80),f=r(7),a=f("iterator"),s=f("toStringTag"),l=c.Array,h=["NodeList","DOMTokenList","MediaList","StyleSheetList","CSSRuleList"],v=0;v<5;v++){var p,d=h[v],y=o[d],g=y&&y.prototype;if(g){g[a]||u(g,a,l),g[s]||u(g,s,d),c[d]=l;for(p in e)g[p]||i(g,p,e[p],!0)}}},function(t,n,r){var e=r(1),i=r(151);e(e.G+e.B,{setImmediate:i.set,clearImmediate:i.clear})},function(t,n,r){var e=r(3),i=r(1),o=r(121),u=r(207),c=e.navigator,f=!!c&&/MSIE .\./.test(c.userAgent),a=function(t){return f?function(n,r){return t(o(u,[].slice.call(arguments,2),"function"==typeof n?n:Function(n)),r)}:t};i(i.G+i.B+i.F*f,{setTimeout:a(e.setTimeout),setInterval:a(e.setInterval)})},function(t,n,r){r(330),r(269),r(271),r(270),r(273),r(275),r(280),r(274),r(272),r(282),r(281),r(277),r(278),r(276),r(268),r(279),r(283),r(284),r(236),r(238),r(237),r(286),r(285),r(256),r(266),r(267),r(257),r(258),r(259),r(260),r(261),r(262),r(263),r(264),r(265),r(239),r(240),r(241),r(242),r(243),r(244),r(245),r(246),r(247),r(248),r(249),r(250),r(251),r(252),r(253),r(254),r(255),r(317),r(322),r(329),r(320),r(312),r(313),r(318),r(323),r(325),r(308),r(309),r(310),r(311),r(314),r(315),r(316),r(319),r(321),r(324),r(326),r(327),r(328),r(231),r(233),r(232),r(235),r(234),r(220),r(218),r(224),r(221),r(227),r(229),r(217),r(223),r(214),r(228),r(212),r(226),r(225),r(219),r(222),r(211),r(213),r(216),r(215),r(230),r(155),r(302),r(307),r(184),r(303),r(304),r(305),r(306),r(287),r(183),r(185),r(186),r(342),r(331),r(332),r(337),r(340),r(341),r(335),r(338),r(336),r(339),r(333),r(334),r(288),r(289),r(290),r(291),r(292),r(295),r(293),r(294),r(296),r(297),r(298),r(299),r(301),r(300),r(343),r(369),r(372),r(371),r(373),r(374),r(370),r(375),r(376),r(354),r(357),r(353),r(351),r(352),r(355),r(356),r(346),r(368),r(377),r(345),r(347),r(349),r(348),r(350),r(359),r(360),r(362),r(361),r(364),r(363),r(365),r(366),r(367),r(344),r(358),r(380),r(379),r(378),t.exports=r(52)},function(t,n){function r(t,n){if("string"==typeof n)return t.insertAdjacentHTML("afterend",n);var r=t.nextSibling;return r?t.parentNode.insertBefore(n,r):t.parentNode.appendChild(n)}t.exports=r},,,,,,,,,function(t,n,r){(function(n,r){!function(n){"use strict";function e(t,n,r,e){var i=n&&n.prototype instanceof o?n:o,u=Object.create(i.prototype),c=new p(e||[]);return u._invoke=s(t,r,c),u}function i(t,n,r){try{return{type:"normal",arg:t.call(n,r)}}catch(t){return{type:"throw",arg:t}}}function o(){}function u(){}function c(){}function f(t){["next","throw","return"].forEach(function(n){t[n]=function(t){return this._invoke(n,t)}})}function a(t){function n(r,e,o,u){var c=i(t[r],t,e);if("throw"!==c.type){var f=c.arg,a=f.value;return a&&"object"==typeof a&&m.call(a,"__await")?Promise.resolve(a.__await).then(function(t){n("next",t,o,u)},function(t){n("throw",t,o,u)}):Promise.resolve(a).then(function(t){f.value=t,o(f)},u)}u(c.arg)}function e(t,r){function e(){return new Promise(function(e,i){n(t,r,e,i)})}return o=o?o.then(e,e):e()}"object"==typeof r&&r.domain&&(n=r.domain.bind(n));var o;this._invoke=e}function s(t,n,r){var e=P;return function(o,u){if(e===F)throw new Error("Generator is already running");if(e===M){if("throw"===o)throw u;return y()}for(r.method=o,r.arg=u;;){var c=r.delegate;if(c){var f=l(c,r);if(f){if(f===A)continue;return f}}if("next"===r.method)r.sent=r._sent=r.arg;else if("throw"===r.method){if(e===P)throw e=M,r.arg;r.dispatchException(r.arg)}else"return"===r.method&&r.abrupt("return",r.arg);e=F;var a=i(t,n,r);if("normal"===a.type){if(e=r.done?M:j,a.arg===A)continue;return{value:a.arg,done:r.done}}"throw"===a.type&&(e=M,r.method="throw",r.arg=a.arg)}}}function l(t,n){var r=t.iterator[n.method];if(r===g){if(n.delegate=null,"throw"===n.method){if(t.iterator.return&&(n.method="return",n.arg=g,l(t,n),"throw"===n.method))return A;n.method="throw",n.arg=new TypeError("The iterator does not provide a 'throw' method")}return A}var e=i(r,t.iterator,n.arg);if("throw"===e.type)return n.method="throw",n.arg=e.arg,n.delegate=null,A;var o=e.arg;return o?o.done?(n[t.resultName]=o.value,n.next=t.nextLoc,"return"!==n.method&&(n.method="next",n.arg=g),n.delegate=null,A):o:(n.method="throw",n.arg=new TypeError("iterator result is not an object"),n.delegate=null,A)}function h(t){var n={tryLoc:t[0]};1 in t&&(n.catchLoc=t[1]),2 in t&&(n.finallyLoc=t[2],n.afterLoc=t[3]),this.tryEntries.push(n)}function v(t){var n=t.completion||{};n.type="normal",delete n.arg,t.completion=n}function p(t){this.tryEntries=[{tryLoc:"root"}],t.forEach(h,this),this.reset(!0)}function d(t){if(t){var n=t[w];if(n)return n.call(t);if("function"==typeof t.next)return t;if(!isNaN(t.length)){var r=-1,e=function n(){for(;++r<t.length;)if(m.call(t,r))return n.value=t[r],n.done=!1,n;return n.value=g,n.done=!0,n};return e.next=e}}return{next:y}}function y(){return{value:g,done:!0}}var g,b=Object.prototype,m=b.hasOwnProperty,x="function"==typeof Symbol?Symbol:{},w=x.iterator||"@@iterator",S=x.asyncIterator||"@@asyncIterator",_=x.toStringTag||"@@toStringTag",O="object"==typeof t,E=n.regeneratorRuntime;if(E)return void(O&&(t.exports=E));E=n.regeneratorRuntime=O?t.exports:{},E.wrap=e;var P="suspendedStart",j="suspendedYield",F="executing",M="completed",A={},N={};N[w]=function(){return this};var T=Object.getPrototypeOf,I=T&&T(T(d([])));I&&I!==b&&m.call(I,w)&&(N=I);var k=c.prototype=o.prototype=Object.create(N);u.prototype=k.constructor=c,c.constructor=u,c[_]=u.displayName="GeneratorFunction",E.isGeneratorFunction=function(t){var n="function"==typeof t&&t.constructor;return!!n&&(n===u||"GeneratorFunction"===(n.displayName||n.name))},E.mark=function(t){return Object.setPrototypeOf?Object.setPrototypeOf(t,c):(t.__proto__=c,_ in t||(t[_]="GeneratorFunction")),t.prototype=Object.create(k),t},E.awrap=function(t){return{__await:t}},f(a.prototype),a.prototype[S]=function(){return this},E.AsyncIterator=a,E.async=function(t,n,r,i){var o=new a(e(t,n,r,i));return E.isGeneratorFunction(n)?o:o.next().then(function(t){return t.done?t.value:o.next()})},f(k),k[_]="Generator",k.toString=function(){return"[object Generator]"},E.keys=function(t){var n=[];for(var r in t)n.push(r);return n.reverse(),function r(){for(;n.length;){var e=n.pop();if(e in t)return r.value=e,r.done=!1,r}return r.done=!0,r}},E.values=d,p.prototype={constructor:p,reset:function(t){if(this.prev=0,this.next=0,this.sent=this._sent=g,this.done=!1,this.delegate=null,this.method="next",this.arg=g,this.tryEntries.forEach(v),!t)for(var n in this)"t"===n.charAt(0)&&m.call(this,n)&&!isNaN(+n.slice(1))&&(this[n]=g)},stop:function(){this.done=!0;var t=this.tryEntries[0],n=t.completion;if("throw"===n.type)throw n.arg;return this.rval},dispatchException:function(t){function n(n,e){return o.type="throw",o.arg=t,r.next=n,e&&(r.method="next",r.arg=g),!!e}if(this.done)throw t;for(var r=this,e=this.tryEntries.length-1;e>=0;--e){var i=this.tryEntries[e],o=i.completion;if("root"===i.tryLoc)return n("end");if(i.tryLoc<=this.prev){var u=m.call(i,"catchLoc"),c=m.call(i,"finallyLoc");if(u&&c){if(this.prev<i.catchLoc)return n(i.catchLoc,!0);if(this.prev<i.finallyLoc)return n(i.finallyLoc)}else if(u){if(this.prev<i.catchLoc)return n(i.catchLoc,!0)}else{if(!c)throw new Error("try statement without catch or finally");if(this.prev<i.finallyLoc)return n(i.finallyLoc)}}}},abrupt:function(t,n){for(var r=this.tryEntries.length-1;r>=0;--r){var e=this.tryEntries[r];if(e.tryLoc<=this.prev&&m.call(e,"finallyLoc")&&this.prev<e.finallyLoc){var i=e;break}}i&&("break"===t||"continue"===t)&&i.tryLoc<=n&&n<=i.finallyLoc&&(i=null);var o=i?i.completion:{};return o.type=t,o.arg=n,i?(this.method="next",this.next=i.finallyLoc,A):this.complete(o)},complete:function(t,n){if("throw"===t.type)throw t.arg;return"break"===t.type||"continue"===t.type?this.next=t.arg:"return"===t.type?(this.rval=this.arg=t.arg,this.method="return",this.next="end"):"normal"===t.type&&n&&(this.next=n),A},finish:function(t){for(var n=this.tryEntries.length-1;n>=0;--n){var r=this.tryEntries[n];if(r.finallyLoc===t)return this.complete(r.completion,r.afterLoc),v(r),A}},catch:function(t){for(var n=this.tryEntries.length-1;n>=0;--n){var r=this.tryEntries[n];if(r.tryLoc===t){var e=r.completion;if("throw"===e.type){var i=e.arg;v(r)}return i}}throw new Error("illegal catch attempt")},delegateYield:function(t,n,r){return this.delegate={iterator:d(t),resultName:n,nextLoc:r},"next"===this.method&&(this.arg=g),A}}}("object"==typeof n?n:"object"==typeof window?window:"object"==typeof self?self:this)}).call(n,function(){return this}(),r(158))}])</script><script src="/./main.507b3a.js"></script><script>!function(){!function(e){var t=document.createElement("script");document.getElementsByTagName("body")[0].appendChild(t),t.setAttribute("src",e)}("/slider.e37972.js")}()</script>
 
 
+<!-- MathJax配置，可通过单美元符号书写行内公式等 -->
 <script type="text/x-mathjax-config">
-MathJax.Hub.Config({
-    tex2jax: {
-        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
-        processEscapes: true,
+    MathJax.Hub.Config({
+    "HTML-CSS": { 
+        preferredFont: "TeX", 
+        availableFonts: ["STIX","TeX"], 
+        linebreaks: { automatic:true }, 
+        EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50) 
+    },
+    tex2jax: { 
+        inlineMath: [ ["$", "$"], ["\\(","\\)"] ], 
+        processEscapes: true, 
+        ignoreClass: "tex2jax_ignore|dno",
         skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-    }
-});
-
-MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for(i=0; i < all.length; i += 1) {
-        all[i].SourceElement().parentNode.className += ' has-jax';                 
-    }       
-});
+    },
+    TeX: {  
+        equationNumbers: { autoNumber: "AMS" },
+        noUndefined: { attributes: { mathcolor: "red", mathbackground: "#FFEEEE", mathsize: "90%" } }, 
+        Macros: { href: "{}" } 
+    },
+    messageStyle: "none"
+    }); 
+</script>
+<!-- 给MathJax元素添加has-jax class -->
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<!-- 通过连接CDN加载MathJax的js代码 -->
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
 
-<script src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
-</script>
 
 
     
