@@ -20,7 +20,7 @@
 <meta property="og:image" content="http://yoursite.com/2017/11/05/DQN/sarsa.png">
 <meta property="og:image" content="http://yoursite.com/2017/11/05/DQN/qlearning.png">
 <meta property="og:image" content="http://yoursite.com/2017/11/05/DQN/dqn.png">
-<meta property="og:updated_time" content="2017-11-14T13:48:15.000Z">
+<meta property="og:updated_time" content="2017-11-14T14:52:37.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="强化学习—DQN算法原理详解">
 <meta name="twitter:description" content="MathJax.Hub.Config({ tex2jax: {inlineMath: [[&apos;$&apos;,&apos;$&apos;], [&apos;\\(&apos;,&apos;\\)&apos;]]} });      一、 概述强化学习算法可以分为三大类：value based, policy based 和 actor critic。常见的是以DQN为代表的value based算法，这种算法中只有一个值函数网络，没有policy网络，以及以DDPG">
@@ -230,7 +230,7 @@ tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
 <p><strong>DQN属于Model Free的强化学习算法，它需要采样</strong>。且同SarSa类似，只依赖下一个step的值函数。但它更新值函数的方式与SarSa又有所不同。下面介绍从SarSa到Q-Learning再到DQN的更新值函数的方式。</p>
 <h4 id="1-SarSa"><a href="#1-SarSa" class="headerlink" title="(1) SarSa"></a>(1) SarSa</h4><img src="/2017/11/05/DQN/sarsa.png" title="sarsa">  
 <p>SarSa中更新值函数的公式为：</p>
-<script type="math/tex; mode=display">Q(s, a) \leftarrow Q(s, a) + \alpha [R + \gamma Q(s', a') - Q(s, a)]</script><p>也称它的<strong>target</strong>是 $R_{t+1} + \gamma Q(s_{t+1}, a_{t+1})$。理解这个target代表的意义：</p>
+<script type="math/tex; mode=display">Q(s, a) \leftarrow Q(s, a) + \alpha [R + \gamma Q(s', a') - Q(s, a)]</script><p>也称它的<strong>target</strong>是 $R_{t+1} + \gamma Q(S_{t+1}, a_{t+1})$。理解这个target代表的意义：</p>
 <script type="math/tex; mode=display">
 \begin{equation}
 \begin{split}
@@ -239,14 +239,14 @@ V(s) &= E[G_t | S_t = s] \\
 &= E[R_{t+1} + \gamma V(S_{t+1}) | S_t=s]
 \end{split}
 \nonumber
-\end{equation}</script><p>将V换成Q的话我们可以看到，SarSa target $R_{t+1}+ \gamma Q(s_{t+1}, a_{t+1})$ 是 $Q(S_t, a_t)$ 的估计值。</p>
+\end{equation}</script><p>将V换成Q的话我们可以看到，SarSa target $R_{t+1}+ \gamma Q(S_{t+1}, a_{t+1})$ 是 $Q(S_t, a_t)$ 的估计值。</p>
 <p><strong>在值函数近似中，我们都是使用target来替代真实的值函数，即Loss中的真实值。</strong>  </p>
 <p>前面说过DQN是使用$\epsilon-greedy$策略来输出action，SarSa和Q-Learning也是。SarSa中使用$\epsilon-greedy$策略生成action $a_{t+1}$，随即又用 $a_{t+1}$处对应的值函数来计算target，更新上一步的值函数。这种学习方式又称为<strong>On-policy</strong>。  </p>
 <p>SarSa属于On-policy Learning，而Q-Learning属于Off-policy Learning。</p>
 <h4 id="2-Q-Learning"><a href="#2-Q-Learning" class="headerlink" title="(2) Q-Learning"></a>(2) Q-Learning</h4><img src="/2017/11/05/DQN/qlearning.png" title="qlearning">  
-<p>Q-Learning的target是 $R_{t+1} + \gamma max_{a’} Q(s_{t+1}, a’)$。它使用 $\epsilon-greedy$策略来生成action $a_{t+1}$，但用来计算target的action却不一定是$a_{t+1}$，而是使得 $Q(S_{t+1}, a)$最大的action。这种产生行为的策略和进行评估的策略不一样的方法称为Off-policy方法。对于Q-Learning来说，产生行为的策略是$\epsilon-greedy$，而进行评估的策略是greedy。  </p>
+<p>Q-Learning的target是 $R_{t+1} + \gamma max_{a’} Q(S_{t+1}, a’)$。它使用 $\epsilon-greedy$策略来生成action $a_{t+1}$，但用来计算target的action却不一定是$a_{t+1}$，而是使得 $Q(S_{t+1}, a)$最大的action。这种产生行为的策略和进行评估的策略不一样的方法称为Off-policy方法。对于Q-Learning来说，产生行为的策略是$\epsilon-greedy$，而进行评估的策略是greedy。  </p>
 <h4 id="3-DQN"><a href="#3-DQN" class="headerlink" title="(3) DQN"></a>(3) DQN</h4><p>Off-policy是Q-Learning的特点，DQN中也延用了这一特点。而不同的是，Q-Learning中用来计算target和预测值的Q是同一个Q，也就是说使用了相同的神经网络。这样带来的一个问题就是，每次更新神经网络的时候，target也都会更新，这样会容易导致参数不收敛。回忆在有监督学习中，标签label都是固定的，不会随着参数的更新而改变。  </p>
-<p>因此DQN在原来的Q网络的基础上又引入了一个<strong>target Q网络</strong>，即用来计算target的网络。它和Q网络结构一样，初始的权重也一样，只是Q网络每次迭代都会更新，而target Q网络是每隔一段时间才会更新。DQN的target是 $R_{t+1} + \gamma max_{a’} Q(s_{t+1}, a’; \omega^{-})$。用 $\omega^{-}$表示它比Q网络的权重 $\omega$更新得要慢一些。</p>
+<p>因此DQN在原来的Q网络的基础上又引入了一个<strong>target Q网络</strong>，即用来计算target的网络。它和Q网络结构一样，初始的权重也一样，只是Q网络每次迭代都会更新，而target Q网络是每隔一段时间才会更新。DQN的target是 $R_{t+1} + \gamma max_{a’} Q(S_{t+1}, a’; \omega^{-})$。用 $\omega^{-}$表示它比Q网络的权重 $\omega$更新得要慢一些。</p>
 <p>理解了DQN的target之后也就可以理解DQN的Loss Function了。</p>
 <h3 id="2、DQN所做的改进"><a href="#2、DQN所做的改进" class="headerlink" title="2、DQN所做的改进"></a>2、DQN所做的改进</h3><p>相比于Q-Learning，DQN做的改进：一个是使用了卷积神经网络来逼近行为值函数，一个是使用了target Q network来更新target，还有一个是使用了经验回放Experience replay。  </p>
 <p>由于在强化学习中，我们得到的观测数据是有序的，step by step的，用这样的数据去更新神经网络的参数会有问题。回忆在有监督学习中，数据之间都是独立的。因此DQN中使用经验回放，即用一个Memory来存储经历过的数据，每次更新参数的时候从Memory中抽取一部分的数据来用于更新，以此来打破数据间的关联。</p>
@@ -261,7 +261,7 @@ V(s) &= E[G_t | S_t = s] \\
 <li>执行action $a_t$，接收reward $r_t$及新的state $S_{t+1}$;  </li>
 <li>将transition样本 $(S_t, a_t, r_t, S_{t+1})$存入D中；  </li>
 <li>从D中随机抽取一个minibatch的transitions $(S_j, a_j, r_j, S_{j+1})$；  </li>
-<li>令$y_j = r_j$，如果 $j+1$步是terminal的话，否则，令 $y_j = r_j + \gamma max_{a’} Q(s_{t+1}, a’; \omega^-)$；    </li>
+<li>令$y_j = r_j$，如果 $j+1$步是terminal的话，否则，令 $y_j = r_j + \gamma max_{a’} Q(S_{t+1}, a’; \omega^-)$；    </li>
 <li>对$(y_j - Q(S_t, a_j; \omega))^2$关于$\omega$使用梯度下降法进行更新；  </li>
 <li>每隔C steps更新target Q网络，$\omega^- = \omega$。  </li>
 </ul>
