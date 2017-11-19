@@ -8,17 +8,17 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>更博计划 | Wanjun&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="Next:-  DDPG-  Model-based RL">
+  <meta name="description" content="Next: - DDPG - Prioritized Experience Replay 及其代码实现 - Model-based RL">
 <meta name="keywords" content="更博计划">
 <meta property="og:type" content="article">
 <meta property="og:title" content="更博计划">
-<meta property="og:url" content="http://yoursite.com/2017/11/07/更博计划/index.html">
+<meta property="og:url" content="http://yoursite.com/2017/11/19/更博计划/index.html">
 <meta property="og:site_name" content="Wanjun&#39;s blog">
-<meta property="og:description" content="Next:-  DDPG-  Model-based RL">
-<meta property="og:updated_time" content="2017-11-09T14:02:38.000Z">
+<meta property="og:description" content="Next: - DDPG - Prioritized Experience Replay 及其代码实现 - Model-based RL">
+<meta property="og:updated_time" content="2017-11-19T10:51:49.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="更博计划">
-<meta name="twitter:description" content="Next:-  DDPG-  Model-based RL">
+<meta name="twitter:description" content="Next: - DDPG - Prioritized Experience Replay 及其代码实现 - Model-based RL">
   
     <link rel="alternative" href="/atom.xml" title="Wanjun&#39;s blog" type="application/atom+xml">
   
@@ -87,11 +87,7 @@
 				
 					<a class="github" target="_blank" href="https://github.com/Wanjun0511" title="github"><i class="icon-github"></i></a>
 		        
-					<a class="zhihu" target="_blank" href="https://www.zhihu.com/people/wanjun0511/activities" title="zhihu"><i class="icon-zhihu"></i></a>
-		        
 					<a class="linkedin" target="_blank" href="https://www.linkedin.com/in/wanjun-liu-8b0131b2/" title="linkedin"><i class="icon-linkedin"></i></a>
-		        
-					<a class="weibo" target="_blank" href="https://weibo.com/6205194449/profile?topnav=1&wvr=6&is_all=1" title="weibo"><i class="icon-weibo"></i></a>
 		        
 					<a class="mail" target="_blank" href="mailto: liuwanjunniki@outlook.com" title="mail"><i class="icon-mail"></i></a>
 		        
@@ -134,11 +130,7 @@
 					
 						<a class="github" target="_blank" href="https://github.com/Wanjun0511" title="github"><i class="icon-github"></i></a>
 			        
-						<a class="zhihu" target="_blank" href="https://www.zhihu.com/people/wanjun0511/activities" title="zhihu"><i class="icon-zhihu"></i></a>
-			        
 						<a class="linkedin" target="_blank" href="https://www.linkedin.com/in/wanjun-liu-8b0131b2/" title="linkedin"><i class="icon-linkedin"></i></a>
-			        
-						<a class="weibo" target="_blank" href="https://weibo.com/6205194449/profile?topnav=1&wvr=6&is_all=1" title="weibo"><i class="icon-weibo"></i></a>
 			        
 						<a class="mail" target="_blank" href="mailto: liuwanjunniki@outlook.com" title="mail"><i class="icon-mail"></i></a>
 			        
@@ -180,15 +172,19 @@
   
 
         
-        <a href="/2017/11/07/更博计划/" class="archive-article-date">
-  	<time datetime="2017-11-07T13:42:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-11-07</time>
+        <a href="/2017/11/19/更博计划/" class="archive-article-date">
+  	<time datetime="2017-11-19T10:50:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-11-19</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="Next"><a href="#Next" class="headerlink" title="Next:"></a>Next:</h2><h3 id="DDPG"><a href="#DDPG" class="headerlink" title="-  DDPG"></a>-  DDPG</h3><h3 id="Model-based-RL"><a href="#Model-based-RL" class="headerlink" title="-  Model-based RL"></a>-  Model-based RL</h3>
+        <h2 id="next">Next:</h2>
+<h3 id="ddpg">- DDPG</h3>
+<h3 id="prioritized-experience-replay-及其代码实现">- Prioritized Experience Replay 及其代码实现</h3>
+<h3 id="model-based-rl">- Model-based RL</h3>
+
       
 
       
@@ -283,7 +279,7 @@
     <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
     <p>扫一扫，分享到微信</p>
     <div class="wx-qrcode">
-      <img src="http://s.jiathis.com/qrcode.php?url=http://yoursite.com/2017/11/07/更博计划/" alt="微信分享二维码">
+      <img src="http://s.jiathis.com/qrcode.php?url=http://yoursite.com/2017/11/19/更博计划/" alt="微信分享二维码">
     </div>
 </div>
 
@@ -298,8 +294,8 @@
 <nav id="article-nav">
   
   
-    <a href="/2017/11/05/DQN/" id="article-nav-older" class="article-nav-link-wrap">
-      <div class="article-nav-title">强化学习—DQN算法原理详解</div>
+    <a href="/2017/11/19/DDPG/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">强化学习—DDPG算法原理详解</div>
       <i class="icon-circle-right"></i>
     </a>
   
@@ -326,7 +322,7 @@
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Next"><span class="toc-number">1.</span> <span class="toc-text">Next:</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#DDPG"><span class="toc-number">1.1.</span> <span class="toc-text">-  DDPG</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Model-based-RL"><span class="toc-number">1.2.</span> <span class="toc-text">-  Model-based RL</span></a></li></ol></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#next"><span class="toc-number">1.</span> <span class="toc-text">Next:</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ddpg"><span class="toc-number">1.1.</span> <span class="toc-text">- DDPG</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#prioritized-experience-replay-及其代码实现"><span class="toc-number">1.2.</span> <span class="toc-text">- Prioritized Experience Replay 及其代码实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#model-based-rl"><span class="toc-number">1.3.</span> <span class="toc-text">- Model-based RL</span></a></li></ol></li></ol>
                     </div>
                 </span>
             </div>
@@ -351,7 +347,7 @@
 <script src="https://imsun.github.io/gitment/dist/gitment.browser.js"></script>
 <script>
 var gitment = new Gitment({
-  id: "http://yoursite.com/2017/11/07/更博计划/",
+  id: "http://yoursite.com/2017/11/19/更博计划/",
   owner: 'Wanjun0511',
   repo: 'Wanjun0511.github.io',
   oauth: {

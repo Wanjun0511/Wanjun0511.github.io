@@ -85,11 +85,7 @@
 				
 					<a class="github" target="_blank" href="https://github.com/Wanjun0511" title="github"><i class="icon-github"></i></a>
 		        
-					<a class="zhihu" target="_blank" href="https://www.zhihu.com/people/wanjun0511/activities" title="zhihu"><i class="icon-zhihu"></i></a>
-		        
 					<a class="linkedin" target="_blank" href="https://www.linkedin.com/in/wanjun-liu-8b0131b2/" title="linkedin"><i class="icon-linkedin"></i></a>
-		        
-					<a class="weibo" target="_blank" href="https://weibo.com/6205194449/profile?topnav=1&wvr=6&is_all=1" title="weibo"><i class="icon-weibo"></i></a>
 		        
 					<a class="mail" target="_blank" href="mailto: liuwanjunniki@outlook.com" title="mail"><i class="icon-mail"></i></a>
 		        
@@ -132,11 +128,7 @@
 					
 						<a class="github" target="_blank" href="https://github.com/Wanjun0511" title="github"><i class="icon-github"></i></a>
 			        
-						<a class="zhihu" target="_blank" href="https://www.zhihu.com/people/wanjun0511/activities" title="zhihu"><i class="icon-zhihu"></i></a>
-			        
 						<a class="linkedin" target="_blank" href="https://www.linkedin.com/in/wanjun-liu-8b0131b2/" title="linkedin"><i class="icon-linkedin"></i></a>
-			        
-						<a class="weibo" target="_blank" href="https://weibo.com/6205194449/profile?topnav=1&wvr=6&is_all=1" title="weibo"><i class="icon-weibo"></i></a>
 			        
 						<a class="mail" target="_blank" href="mailto: liuwanjunniki@outlook.com" title="mail"><i class="icon-mail"></i></a>
 			        
@@ -175,20 +167,24 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2017/11/07/更博计划/">更博计划</a>
+      <a class="article-title" href="/2017/11/19/更博计划/">更博计划</a>
     </h1>
   
 
         
-        <a href="/2017/11/07/更博计划/" class="archive-article-date">
-  	<time datetime="2017-11-07T13:42:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-11-07</time>
+        <a href="/2017/11/19/更博计划/" class="archive-article-date">
+  	<time datetime="2017-11-19T10:50:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-11-19</time>
 </a>
         
       </header>
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="Next"><a href="#Next" class="headerlink" title="Next:"></a>Next:</h2><h3 id="DDPG"><a href="#DDPG" class="headerlink" title="-  DDPG"></a>-  DDPG</h3><h3 id="Model-based-RL"><a href="#Model-based-RL" class="headerlink" title="-  Model-based RL"></a>-  Model-based RL</h3>
+        <h2 id="next">Next:</h2>
+<h3 id="ddpg">- DDPG</h3>
+<h3 id="prioritized-experience-replay-及其代码实现">- Prioritized Experience Replay 及其代码实现</h3>
+<h3 id="model-based-rl">- Model-based RL</h3>
+
       
 
       
@@ -211,7 +207,103 @@
 
       
         <p class="article-more-link">
-          <a class="article-more-a" href="/2017/11/07/更博计划/">展开全文 >></a>
+          <a class="article-more-a" href="/2017/11/19/更博计划/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-DDPG" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/11/19/DDPG/">强化学习—DDPG算法原理详解</a>
+    </h1>
+  
+
+        
+        <a href="/2017/11/19/DDPG/" class="archive-article-date">
+  	<time datetime="2017-11-19T04:48:00.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2017-11-19</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
+});
+</script>
+<script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<h2 id="一-概述">一、 概述</h2>
+<p>在<a href="https://wanjun0511.github.io/2017/11/05/DQN/" target="_blank" rel="external">DQN</a>中有讲过，DQN是一种 model free（无模型）, off-policy（产生行为的策略和进行评估的策略不一样）的强化学习算法。DDPG (Deep Deterministic Policy Gradient)算法也是model free, off-policy的，且同样使用了深度神经网络用于函数近似。但与DQN不同的是，DQN只能解决离散且维度不高的action spaces的问题，这一点请回忆DQN的神经网络的输出。而DDPG可以解决<strong>连续动作空间</strong>问题。另外，DQN是value based方法，即只有一个值函数网络，而DDPG是actor-critic方法，即既有值函数网络(critic)，又有策略网络(actor)。</p>
+<h2 id="二算法原理">二、算法原理</h2>
+        
+          <a class="article-more-a" href="/2017/11/19/DDPG/#more">more >></a>
+        
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+	<div class="article-tag tagcloud">
+		<i class="icon-price-tags icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="javascript:void(0)" class="js-tag article-tag-list-link color5">强化学习</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+      
+	<div class="article-category tagcloud">
+		<i class="icon-book icon"></i>
+		<ul class="article-tag-list">
+			 
+        		<li class="article-tag-list-item">
+        			<a href="/categories/DDPG//" class="article-tag-list-link color5">DDPG</a>
+        		</li>
+      		
+		</ul>
+	</div>
+
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2017/11/19/DDPG/">展开全文 >></a>
         </p>
       
 
@@ -266,13 +358,11 @@ MathJax.Hub.Config({
 tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
 });
 </script>
-
 <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
-
-<h2 id="一、-概述"><a href="#一、-概述" class="headerlink" title="一、 概述"></a>一、 概述</h2><p>强化学习算法可以分为三大类：value based, policy based 和 actor critic。常见的是以DQN为代表的value based算法，这种算法中只有一个值函数网络，没有policy网络，以及以DDPG,TRPO为代表的actor-critic算法，这种算法中既有值函数网络，又有policy网络。</p>
-<p>说到DQN中有值函数网络，这里简单介绍一下强化学习中的一个概念，叫<strong>值函数近似</strong>。在<a href="https://wanjun0511.github.io/2017/11/04/强化学习-基本概念/" target="_blank" rel="external">基本概念</a>这篇中有讲过，一个state action pair $(s, a)$对应一个值函数$Q(s, a)$。理论上对于任意的$(s, a)$我们都可以由公式求出它的值函数，即用一个查询表lookup table来表示值函数。但是当state或action的个数过多时，分别去求每一个值函数会很慢。因此我们用函数近似的方式去估计值函数：</p>
-<script type="math/tex; mode=display">\hat{Q}(s, a, w) \approx Q_\pi(s, a)</script>
+<h2 id="一-概述">一、 概述</h2>
+<p>强化学习算法可以分为三大类：value based, policy based 和 actor critic。常见的是以DQN为代表的value based算法，这种算法中只有一个值函数网络，没有policy网络，以及以DDPG,TRPO为代表的actor-critic算法，这种算法中既有值函数网络，又有policy网络。</p>
+<p>说到DQN中有值函数网络，这里简单介绍一下强化学习中的一个概念，叫<strong>值函数近似</strong>。在<a href="https://wanjun0511.github.io/2017/11/04/强化学习-基本概念/" target="_blank" rel="external">基本概念</a>这篇中有讲过，一个state action pair <span class="math inline">\((s, a)\)</span>对应一个值函数<span class="math inline">\(Q(s, a)\)</span>。理论上对于任意的<span class="math inline">\((s, a)\)</span>我们都可以由公式求出它的值函数，即用一个查询表lookup table来表示值函数。但是当state或action的个数过多时，分别去求每一个值函数会很慢。因此我们用函数近似的方式去估计值函数： <span class="math display">\[\hat{Q}(s, a, w) \approx Q_\pi(s, a)\]</span></p>
         
           <a class="article-more-a" href="/2017/11/05/DQN/#more">more >></a>
         
@@ -364,11 +454,11 @@ MathJax.Hub.Config({
 tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
 });
 </script>
-
 <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
-
-<h2 id="一、概述"><a href="#一、概述" class="headerlink" title="一、概述"></a>一、概述</h2><p>直观上来说，强化学习是智能体与环境不断交互，从而不断强化自己的决策能力的过程。<br><img src="/2017/11/04/强化学习-基本概念/rl.png" title="强化学习"></p>
+<h2 id="一概述">一、概述</h2>
+<p>直观上来说，强化学习是智能体与环境不断交互，从而不断强化自己的决策能力的过程。<br>
+<img src="/2017/11/04/强化学习-基本概念/rl.png" title="强化学习"></p>
         
           <a class="article-more-a" href="/2017/11/04/强化学习-基本概念/#more">more >></a>
         
