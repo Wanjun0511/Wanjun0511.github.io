@@ -8,17 +8,20 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>强化学习—DDPG算法原理详解 | Wanjun&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="MathJax.Hub.Config({ tex2jax: {inlineMath: [[&apos;$&apos;,&apos;$&apos;], [&apos;\\(&apos;,&apos;\\)&apos;]]} });    一、 概述 在DQN中有讲过，DQN是一种 model free（无模型）, off-policy（产生行为的策略和进行评估的策略不一样）的强化学习算法。DDPG (Deep Deterministic Policy Gradient)算法也">
+  <meta name="description" content="MathJax.Hub.Config({ tex2jax: {inlineMath: [[&apos;$&apos;,&apos;$&apos;], [&apos;\\(&apos;,&apos;\\)&apos;]]} });    一、 概述 在DQN中有讲过，DQN是一种 model free（无环境模型）, off-policy（产生行为的策略和进行评估的策略不一样）的强化学习算法。DDPG (Deep Deterministic Policy Gradient)算">
 <meta name="keywords" content="强化学习">
 <meta property="og:type" content="article">
 <meta property="og:title" content="强化学习—DDPG算法原理详解">
 <meta property="og:url" content="http://yoursite.com/2017/11/19/DDPG/index.html">
 <meta property="og:site_name" content="Wanjun&#39;s blog">
-<meta property="og:description" content="MathJax.Hub.Config({ tex2jax: {inlineMath: [[&apos;$&apos;,&apos;$&apos;], [&apos;\\(&apos;,&apos;\\)&apos;]]} });    一、 概述 在DQN中有讲过，DQN是一种 model free（无模型）, off-policy（产生行为的策略和进行评估的策略不一样）的强化学习算法。DDPG (Deep Deterministic Policy Gradient)算法也">
-<meta property="og:updated_time" content="2017-11-19T10:51:49.000Z">
+<meta property="og:description" content="MathJax.Hub.Config({ tex2jax: {inlineMath: [[&apos;$&apos;,&apos;$&apos;], [&apos;\\(&apos;,&apos;\\)&apos;]]} });    一、 概述 在DQN中有讲过，DQN是一种 model free（无环境模型）, off-policy（产生行为的策略和进行评估的策略不一样）的强化学习算法。DDPG (Deep Deterministic Policy Gradient)算">
+<meta property="og:image" content="http://yoursite.com/2017/11/19/DDPG/critic.jpeg">
+<meta property="og:image" content="http://yoursite.com/2017/11/19/DDPG/actor.jpeg">
+<meta property="og:updated_time" content="2017-11-21T14:28:17.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="强化学习—DDPG算法原理详解">
-<meta name="twitter:description" content="MathJax.Hub.Config({ tex2jax: {inlineMath: [[&apos;$&apos;,&apos;$&apos;], [&apos;\\(&apos;,&apos;\\)&apos;]]} });    一、 概述 在DQN中有讲过，DQN是一种 model free（无模型）, off-policy（产生行为的策略和进行评估的策略不一样）的强化学习算法。DDPG (Deep Deterministic Policy Gradient)算法也">
+<meta name="twitter:description" content="MathJax.Hub.Config({ tex2jax: {inlineMath: [[&apos;$&apos;,&apos;$&apos;], [&apos;\\(&apos;,&apos;\\)&apos;]]} });    一、 概述 在DQN中有讲过，DQN是一种 model free（无环境模型）, off-policy（产生行为的策略和进行评估的策略不一样）的强化学习算法。DDPG (Deep Deterministic Policy Gradient)算">
+<meta name="twitter:image" content="http://yoursite.com/2017/11/19/DDPG/critic.jpeg">
   
     <link rel="alternative" href="/atom.xml" title="Wanjun&#39;s blog" type="application/atom+xml">
   
@@ -188,12 +191,23 @@ tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
 <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
 <h2 id="一-概述">一、 概述</h2>
-<p>在<a href="https://wanjun0511.github.io/2017/11/05/DQN/" target="_blank" rel="external">DQN</a>中有讲过，DQN是一种 model free（无模型）, off-policy（产生行为的策略和进行评估的策略不一样）的强化学习算法。DDPG (Deep Deterministic Policy Gradient)算法也是model free, off-policy的，且同样使用了深度神经网络用于函数近似。但与DQN不同的是，DQN只能解决离散且维度不高的action spaces的问题，这一点请回忆DQN的神经网络的输出。而DDPG可以解决<strong>连续动作空间</strong>问题。另外，DQN是value based方法，即只有一个值函数网络，而DDPG是actor-critic方法，即既有值函数网络(critic)，又有策略网络(actor)。</p>
+<p>在<a href="https://wanjun0511.github.io/2017/11/05/DQN/" target="_blank" rel="external">DQN</a>中有讲过，DQN是一种 model free（无环境模型）, off-policy（产生行为的策略和进行评估的策略不一样）的强化学习算法。DDPG (Deep Deterministic Policy Gradient)算法也是model free, off-policy的，且同样使用了深度神经网络用于函数近似。但与DQN不同的是，DQN只能解决离散且维度不高的action spaces的问题，这一点请回忆DQN的神经网络的输出。而DDPG可以解决<strong>连续动作空间</strong>问题。另外，DQN是value based方法，即只有一个值函数网络，而DDPG是actor-critic方法，即既有值函数网络(critic)，又有策略网络(actor)。</p>
+<p>DDPG算法原文链接： <a href="https://arxiv.org/pdf/1509.02971.pdf" target="_blank" rel="external">DDPG</a></p>
 <h2 id="二算法原理">二、算法原理</h2>
 <a id="more"></a>
 <p>在<a href="https://wanjun0511.github.io/2017/11/04/强化学习-基本概念/" target="_blank" rel="external">基本概念</a>中有说过，强化学习是一个反复迭代的过程，每一次迭代要解决两个问题：给定一个策略求值函数，和根据值函数来更新策略。</p>
-<p>DDPG中使用一个神经网络来近似值函数，值函数网络又称critic网络，它的输入是 observation <span class="math inline">\(s\)</span></p>
+<p>DDPG中使用一个神经网络来近似值函数，此值函数网络又称<strong>critic网络</strong>，它的输入是 action与observation <span class="math inline">\([a, s]\)</span>，输出是<span class="math inline">\(Q(s, a)\)</span>；另外使用一个神经网络来近似策略函数，此policy网络又称<strong>actor网络</strong>，它的输入是observation <span class="math inline">\(s\)</span>，输出是action <span class="math inline">\(a\)</span>.</p>
+<img src="/2017/11/19/DDPG/critic.jpeg" title="critic-network">
+<p><em>critic:</em> <span class="math inline">\(Q(s, a; \omega)\)</span><br>
+<em>target critic:</em> <span class="math inline">\(Q(s, a; \omega^-)\)</span></p>
+<img src="/2017/11/19/DDPG/actor.jpeg" title="actor-network">
+<p><em>actor:</em> <span class="math inline">\(a = \pi(s; \theta)\)</span><br>
+<em>target actor:</em> <span class="math inline">\(a = \pi(s; \theta^-)\)</span></p>
+<p>这两个网络之间的联系是这样的：首先环境会给出一个obs，智能体根据<strong>actor网络</strong>（后面会讲到在此网络基础上增加噪声）做出决策action，环境收到此action后会给出一个奖励Rew，及新的obs。这个过程是一个step。此时我们要根据Rew去更新<strong>critic网络</strong>，然后沿<strong>critic</strong>建议的方向去更新<strong>actor</strong>网络。接着进入下一个step。如此循环下去，直到我们训练出了一个好的actor网络。</p>
+<p>那么每次迭代如何更新这两个神经网络的参数呢？</p>
+<h3 id="critic网络更新">1、critic网络更新</h3>
 <p><em>等待更新</em></p>
+<h3 id="actor网络更新">2、actor网络更新</h3>
 <h2 id="三算法整体流程">三、算法整体流程</h2>
 
       
@@ -353,7 +367,7 @@ tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一-概述"><span class="toc-number">1.</span> <span class="toc-text">一、 概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二算法原理"><span class="toc-number">2.</span> <span class="toc-text">二、算法原理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三算法整体流程"><span class="toc-number">3.</span> <span class="toc-text">三、算法整体流程</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一-概述"><span class="toc-number">1.</span> <span class="toc-text">一、 概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二算法原理"><span class="toc-number">2.</span> <span class="toc-text">二、算法原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#critic网络更新"><span class="toc-number">2.1.</span> <span class="toc-text">1、critic网络更新</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#actor网络更新"><span class="toc-number">2.2.</span> <span class="toc-text">2、actor网络更新</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三算法整体流程"><span class="toc-number">3.</span> <span class="toc-text">三、算法整体流程</span></a></li></ol>
                     </div>
                 </span>
             </div>
