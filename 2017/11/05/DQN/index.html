@@ -21,7 +21,7 @@
 <meta property="og:image" content="http://yoursite.com/2017/11/05/DQN/sarsa.png">
 <meta property="og:image" content="http://yoursite.com/2017/11/05/DQN/qlearning.png">
 <meta property="og:image" content="http://yoursite.com/2017/11/05/DQN/dqn.png">
-<meta property="og:updated_time" content="2017-11-21T15:45:50.000Z">
+<meta property="og:updated_time" content="2017-12-19T11:38:07.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="强化学习—DQN算法原理详解">
 <meta name="twitter:description" content="MathJax.Hub.Config({ tex2jax: {inlineMath: [[&apos;$&apos;,&apos;$&apos;], [&apos;\\(&apos;,&apos;\\)&apos;]]} });    一、 概述 强化学习算法可以分为三大类：value based, policy based 和 actor critic。常见的是以DQN为代表的value based算法，这种算法中只有一个值函数网络，没有policy网络，以及以DDPG,">
@@ -200,7 +200,7 @@ tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
 <a id="more"></a>
 <p>这样，对于未出现的state action也可以估计值函数。<br>
 至于近似函数，DQN中用的是神经网络，当然如果环境比较简单的话用线性函数来近似也是可以的。</p>
-<p>DQN算法原文链接： <a href="https://arxiv.org/abs/1312.5602" target="_blank" rel="external">2013版</a> <a href="http://www.nature.com/nature/journal/v518/n7540/abs/nature14236.html" target="_blank" rel="external">2015版</a></p>
+<p>DQN算法原文链接： <a href="https://arxiv.org/abs/1312.5602" target="_blank" rel="external">2013版(arxiv)</a> <a href="http://www.nature.com/nature/journal/v518/n7540/abs/nature14236.html" target="_blank" rel="external">2015版(nature)</a></p>
 <h2 id="二算法原理">二、算法原理</h2>
 <p>在<a href="https://wanjun0511.github.io/2017/11/04/强化学习-基本概念/" target="_blank" rel="external">基本概念</a>中有说过，强化学习是一个反复迭代的过程，每一次迭代要解决两个问题：给定一个策略求值函数，和根据值函数来更新策略。</p>
 <p>上面说过DQN使用神经网络来近似值函数，即神经网络的输入是state <span class="math inline">\(s\)</span>,输出是<span class="math inline">\(Q(s, a), \forall a \in \mathcal{A}\)</span> (action space)。通过神经网络计算出值函数后，DQN使用<span class="math inline">\(\epsilon-greedy\)</span>策略来输出action（第四部分中介绍）。值函数网络与<span class="math inline">\(\epsilon-greedy\)</span>策略之间的联系是这样的：首先环境会给出一个obs，智能体根据值函数网络得到关于这个obs的所有<span class="math inline">\(Q(s, a)\)</span>，然后利用<span class="math inline">\(\epsilon-greedy\)</span>选择action并做出决策，环境接收到此action后会给出一个奖励Rew及下一个obs。这是一个step。此时我们根据Rew去更新值函数网络的参数。接着进入下一个step。如此循环下去，直到我们训练出了一个好的值函数网络。</p>
