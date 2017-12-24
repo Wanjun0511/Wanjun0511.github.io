@@ -8,13 +8,13 @@
   <link rel="dns-prefetch" href="http://yoursite.com">
   <title>强化学习—DQN算法原理详解 | Wanjun&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="MathJax.Hub.Config({ tex2jax: {inlineMath: [[&apos;$&apos;,&apos;$&apos;], [&apos;\\(&apos;,&apos;\\)&apos;]]} });    一、 概述 强化学习算法可以分为三大类：value based, policy based 和 actor critic。常见的是以DQN为代表的value based算法，这种算法中只有一个值函数网络，没有policy网络，以及以DDPG,">
+  <meta name="description" content="MathJax.Hub.Config({ tex2jax: {inlineMath: [[&apos;$&apos;,&apos;$&apos;], [&apos;\\(&apos;,&apos;\\)&apos;]]} });      一、 概述强化学习算法可以分为三大类：value based, policy based 和 actor critic。常见的是以DQN为代表的value based算法，这种算法中只有一个值函数网络，没有policy网络，以及以DDPG">
 <meta name="keywords" content="强化学习">
 <meta property="og:type" content="article">
 <meta property="og:title" content="强化学习—DQN算法原理详解">
 <meta property="og:url" content="http://yoursite.com/2017/11/05/DQN/index.html">
 <meta property="og:site_name" content="Wanjun&#39;s blog">
-<meta property="og:description" content="MathJax.Hub.Config({ tex2jax: {inlineMath: [[&apos;$&apos;,&apos;$&apos;], [&apos;\\(&apos;,&apos;\\)&apos;]]} });    一、 概述 强化学习算法可以分为三大类：value based, policy based 和 actor critic。常见的是以DQN为代表的value based算法，这种算法中只有一个值函数网络，没有policy网络，以及以DDPG,">
+<meta property="og:description" content="MathJax.Hub.Config({ tex2jax: {inlineMath: [[&apos;$&apos;,&apos;$&apos;], [&apos;\\(&apos;,&apos;\\)&apos;]]} });      一、 概述强化学习算法可以分为三大类：value based, policy based 和 actor critic。常见的是以DQN为代表的value based算法，这种算法中只有一个值函数网络，没有policy网络，以及以DDPG">
 <meta property="og:image" content="http://yoursite.com/2017/11/05/DQN/network.jpeg">
 <meta property="og:image" content="http://yoursite.com/2017/11/05/DQN/MC.png">
 <meta property="og:image" content="http://yoursite.com/2017/11/05/DQN/TD.png">
@@ -24,7 +24,7 @@
 <meta property="og:updated_time" content="2017-12-19T11:38:07.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="强化学习—DQN算法原理详解">
-<meta name="twitter:description" content="MathJax.Hub.Config({ tex2jax: {inlineMath: [[&apos;$&apos;,&apos;$&apos;], [&apos;\\(&apos;,&apos;\\)&apos;]]} });    一、 概述 强化学习算法可以分为三大类：value based, policy based 和 actor critic。常见的是以DQN为代表的value based算法，这种算法中只有一个值函数网络，没有policy网络，以及以DDPG,">
+<meta name="twitter:description" content="MathJax.Hub.Config({ tex2jax: {inlineMath: [[&apos;$&apos;,&apos;$&apos;], [&apos;\\(&apos;,&apos;\\)&apos;]]} });      一、 概述强化学习算法可以分为三大类：value based, policy based 和 actor critic。常见的是以DQN为代表的value based算法，这种算法中只有一个值函数网络，没有policy网络，以及以DDPG">
 <meta name="twitter:image" content="http://yoursite.com/2017/11/05/DQN/network.jpeg">
   
     <link rel="alternative" href="/atom.xml" title="Wanjun&#39;s blog" type="application/atom+xml">
@@ -192,108 +192,84 @@ MathJax.Hub.Config({
 tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
 });
 </script>
+
 <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
-<h2 id="一-概述">一、 概述</h2>
-<p>强化学习算法可以分为三大类：value based, policy based 和 actor critic。常见的是以DQN为代表的value based算法，这种算法中只有一个值函数网络，没有policy网络，以及以DDPG,TRPO为代表的actor-critic算法，这种算法中既有值函数网络，又有policy网络。</p>
-<p>说到DQN中有值函数网络，这里简单介绍一下强化学习中的一个概念，叫<strong>值函数近似</strong>。在<a href="https://wanjun0511.github.io/2017/11/04/强化学习-基本概念/" target="_blank" rel="external">基本概念</a>这篇中有讲过，一个state action pair <span class="math inline">\((s, a)\)</span>对应一个值函数<span class="math inline">\(Q(s, a)\)</span>。理论上对于任意的<span class="math inline">\((s, a)\)</span>我们都可以由公式求出它的值函数，即用一个查询表lookup table来表示值函数。但是当state或action的个数过多时，分别去求每一个值函数会很慢。因此我们用函数近似的方式去估计值函数： <span class="math display">\[\hat{Q}(s, a, w) \approx Q_\pi(s, a)\]</span></p>
-<a id="more"></a>
-<p>这样，对于未出现的state action也可以估计值函数。<br>
-至于近似函数，DQN中用的是神经网络，当然如果环境比较简单的话用线性函数来近似也是可以的。</p>
-<p>DQN算法原文链接： <a href="https://arxiv.org/abs/1312.5602" target="_blank" rel="external">2013版(arxiv)</a> <a href="http://www.nature.com/nature/journal/v518/n7540/abs/nature14236.html" target="_blank" rel="external">2015版(nature)</a></p>
-<h2 id="二算法原理">二、算法原理</h2>
-<p>在<a href="https://wanjun0511.github.io/2017/11/04/强化学习-基本概念/" target="_blank" rel="external">基本概念</a>中有说过，强化学习是一个反复迭代的过程，每一次迭代要解决两个问题：给定一个策略求值函数，和根据值函数来更新策略。</p>
-<p>上面说过DQN使用神经网络来近似值函数，即神经网络的输入是state <span class="math inline">\(s\)</span>,输出是<span class="math inline">\(Q(s, a), \forall a \in \mathcal{A}\)</span> (action space)。通过神经网络计算出值函数后，DQN使用<span class="math inline">\(\epsilon-greedy\)</span>策略来输出action（第四部分中介绍）。值函数网络与<span class="math inline">\(\epsilon-greedy\)</span>策略之间的联系是这样的：首先环境会给出一个obs，智能体根据值函数网络得到关于这个obs的所有<span class="math inline">\(Q(s, a)\)</span>，然后利用<span class="math inline">\(\epsilon-greedy\)</span>选择action并做出决策，环境接收到此action后会给出一个奖励Rew及下一个obs。这是一个step。此时我们根据Rew去更新值函数网络的参数。接着进入下一个step。如此循环下去，直到我们训练出了一个好的值函数网络。</p>
-<img src="/2017/11/05/DQN/network.jpeg" title="DQN-network">
+
+<h2 id="一、-概述"><a href="#一、-概述" class="headerlink" title="一、 概述"></a>一、 概述</h2><p>强化学习算法可以分为三大类：value based, policy based 和 actor critic。常见的是以DQN为代表的value based算法，这种算法中只有一个值函数网络，没有policy网络，以及以DDPG,TRPO为代表的actor-critic算法，这种算法中既有值函数网络，又有policy网络。</p>
+<p>说到DQN中有值函数网络，这里简单介绍一下强化学习中的一个概念，叫<strong>值函数近似</strong>。在<a href="https://wanjun0511.github.io/2017/11/04/强化学习-基本概念/" target="_blank" rel="external">基本概念</a>这篇中有讲过，一个state action pair $(s, a)$对应一个值函数$Q(s, a)$。理论上对于任意的$(s, a)$我们都可以由公式求出它的值函数，即用一个查询表lookup table来表示值函数。但是当state或action的个数过多时，分别去求每一个值函数会很慢。因此我们用函数近似的方式去估计值函数：</p>
+<script type="math/tex; mode=display">\hat{Q}(s, a, w) \approx Q_\pi(s, a)</script><a id="more"></a>
+<p>这样，对于未出现的state action也可以估计值函数。<br>至于近似函数，DQN中用的是神经网络，当然如果环境比较简单的话用线性函数来近似也是可以的。</p>
+<p>DQN算法原文链接： <a href="https://arxiv.org/abs/1312.5602" target="_blank" rel="external">2013版(arxiv)</a> <a href="http://www.nature.com/nature/journal/v518/n7540/abs/nature14236.html" target="_blank" rel="external">2015版(nature)</a>  </p>
+<h2 id="二、算法原理"><a href="#二、算法原理" class="headerlink" title="二、算法原理"></a>二、算法原理</h2><p>在<a href="https://wanjun0511.github.io/2017/11/04/强化学习-基本概念/" target="_blank" rel="external">基本概念</a>中有说过，强化学习是一个反复迭代的过程，每一次迭代要解决两个问题：给定一个策略求值函数，和根据值函数来更新策略。 </p>
+<p>上面说过DQN使用神经网络来近似值函数，即神经网络的输入是state $s$,输出是$Q(s, a), \forall a \in \mathcal{A}$ (action space)。通过神经网络计算出值函数后，DQN使用$\epsilon-greedy$策略来输出action（第四部分中介绍）。值函数网络与$\epsilon-greedy$策略之间的联系是这样的：首先环境会给出一个obs，智能体根据值函数网络得到关于这个obs的所有$Q(s, a)$，然后利用$\epsilon-greedy$选择action并做出决策，环境接收到此action后会给出一个奖励Rew及下一个obs。这是一个step。此时我们根据Rew去更新值函数网络的参数。接着进入下一个step。如此循环下去，直到我们训练出了一个好的值函数网络。</p>
+<img src="/2017/11/05/DQN/network.jpeg" title="DQN-network">  
 <p>那么每次迭代如何更新神经网络的参数呢？</p>
 <p>与机器学习类似，首先会定义一个loss function，然后使用梯度下降GD来更新参数。接下来首先介绍DQN的loss function，它与Q-Learning的非常类似，只是添加了一个target Q function。然后会介绍除此之外，DQN在Q-Learning上所做的改进。</p>
-<h3 id="loss-function">1、Loss Function</h3>
-<p><span class="math display">\[L(\omega) = E[(R + \gamma \cdot max_{a&#39;}Q(s&#39;, a&#39;; \omega^-) - Q(s,a; \omega))^2]\]</span> 这个公式表面上看起来很复杂，实际上很好理解，它就是一个残差模型，和我们平常见的最小二乘法很类似，真实值与预测值之间的差的平方。预测值就是<span class="math inline">\(Q(s,a; \omega)\)</span>，它是神经网络的输出。“真实值”略微有一点复杂。</p>
-<p>想象一下假如我们想求出<span class="math inline">\((s, a)\)</span>的真实值函数<span class="math inline">\(Q(s, a)\)</span>。它表示我从state <span class="math inline">\(s\)</span>开始出发，并采取action <span class="math inline">\(a\)</span>的话，我所能得到的整体收益的期望值。一种可能的情况是，我们知道环境的模型。这在强化学习中也叫Model Based RL。即我们知道状态转移概率矩阵：当处于<span class="math inline">\((s, a)\)</span>时，下一个到达的状态可能是什么，并且到达每一个状态的概率是什么；我们还知道奖励函数：当处于<span class="math inline">\((s, a)\)</span>时，得到的立即回报的期望值是什么；另外还知道折扣因子。由此，我们便可以通过贝尔曼方程来求解值函数。这种情况下我们可能也并不需要神经网络近似值函数之类的，直接由策略迭代或值迭代便可以求出最优策略。具体方法可以看一下MDP。</p>
-<p>另一种情况就是Model Free RL：不管有没有环境模型，反正我不用。那么在不知道环境模型的情况下如何求解值函数呢？答案就是<strong>采样</strong>。强化学习中有多种采样的方法，这里简单介绍一下：</p>
-<h4 id="monte-carlo">(1) Monte Carlo</h4>
-<img src="/2017/11/05/DQN/MC.png" title="MC">
+<h3 id="1、Loss-Function"><a href="#1、Loss-Function" class="headerlink" title="1、Loss Function"></a>1、Loss Function</h3><script type="math/tex; mode=display">L(\omega) = E[(R + \gamma \cdot max_{a'}Q(s', a'; \omega^-) - Q(s,a; \omega))^2]</script><p>这个公式表面上看起来很复杂，实际上很好理解，它就是一个残差模型，和我们平常见的最小二乘法很类似，真实值与预测值之间的差的平方。预测值就是$Q(s,a; \omega)$，它是神经网络的输出。“真实值”略微有一点复杂。  </p>
+<p>想象一下假如我们想求出$(s, a)$的真实值函数$Q(s, a)$。它表示我从state $s$开始出发，并采取action $a$的话，我所能得到的整体收益的期望值。一种可能的情况是，我们知道环境的模型。这在强化学习中也叫Model Based RL。即我们知道状态转移概率矩阵：当处于$(s, a)$时，下一个到达的状态可能是什么，并且到达每一个状态的概率是什么；我们还知道奖励函数：当处于$(s, a)$时，得到的立即回报的期望值是什么；另外还知道折扣因子。由此，我们便可以通过贝尔曼方程来求解值函数。这种情况下我们可能也并不需要神经网络近似值函数之类的，直接由策略迭代或值迭代便可以求出最优策略。具体方法可以看一下MDP。</p>
+<p>另一种情况就是Model Free RL：不管有没有环境模型，反正我不用。那么在不知道环境模型的情况下如何求解值函数呢？答案就是<strong>采样</strong>。强化学习中有多种采样的方法，这里简单介绍一下：  </p>
+<h4 id="1-Monte-Carlo"><a href="#1-Monte-Carlo" class="headerlink" title="(1) Monte Carlo"></a>(1) Monte Carlo</h4><img src="/2017/11/05/DQN/MC.png" title="MC">  
 <ul>
-<li>MC使用一个完整的episode去更新值函数，因此它需要从<span class="math inline">\(S_t\)</span>到Terminal state的完整样本。<br>
-</li>
-<li>而且需要等到episode结束才能更新值函数。<br>
-</li>
+<li>MC使用一个完整的episode去更新值函数，因此它需要从$S_t$到Terminal state的完整样本。  </li>
+<li>而且需要等到episode结束才能更新值函数。  </li>
 <li>由于有一条完整的样本，它可以计算出return，而值函数是return的期望，所以我们可以用return去更新值函数。</li>
 </ul>
-<h4 id="temporal-difference-sarsa">(2) Temporal Difference / SarSa</h4>
-<img src="/2017/11/05/DQN/TD.png" title="TD">
+<h4 id="2-Temporal-Difference-SarSa"><a href="#2-Temporal-Difference-SarSa" class="headerlink" title="(2) Temporal Difference  / SarSa"></a>(2) Temporal Difference  / SarSa</h4><img src="/2017/11/05/DQN/TD.png" title="TD">  
 <ul>
-<li>与MC不一样的是，TD不需要完整的样本，它只依赖下一个step的值函数，即它用<span class="math inline">\(V(S_{t+1})\)</span> 去更新 <span class="math inline">\(V(S_t)\)</span> (TD), 或用 <span class="math inline">\(Q(S_{t+1}, a_{t+1})\)</span> 去更新 <span class="math inline">\(Q(S_t, a_t)\)</span> (SarSa)</li>
-<li>它不用等到episode结束，每走一步就可以更新值函数。<br>
-</li>
-<li>它不是用的真实的return值来更新值函数，而是用的一个估计值去更新另一个估计值的思想。</li>
+<li>与MC不一样的是，TD不需要完整的样本，它只依赖下一个step的值函数，即它用$V(S_{t+1})$ 去更新 $V(S_t)$ (TD), 或用 $Q(S_{t+1}, a_{t+1})$ 去更新 $Q(S_t, a_t)$ (SarSa) </li>
+<li>它不用等到episode结束，每走一步就可以更新值函数。  </li>
+<li>它不是用的真实的return值来更新值函数，而是用的一个估计值去更新另一个估计值的思想。  </li>
 </ul>
-<p>另外还有<span class="math inline">\(TD(\lambda)\)</span> (或 <span class="math inline">\(SarSa(\lambda)\)</span>)方法，由于DQN中不涉及，暂不介绍。</p>
+<p>另外还有$TD(\lambda)$ (或 $SarSa(\lambda)$)方法，由于DQN中不涉及，暂不介绍。  </p>
 <p><strong>DQN属于Model Free的强化学习算法，它需要采样</strong>。且同SarSa类似，只依赖下一个step的值函数。但它更新值函数的方式与SarSa又有所不同。下面介绍从SarSa到Q-Learning再到DQN的更新值函数的方式。</p>
-<h4 id="sarsa">(1) SarSa</h4>
-<img src="/2017/11/05/DQN/sarsa.png" title="sarsa">
-<p>SarSa中更新值函数的公式为： <span class="math display">\[Q(s, a) \leftarrow Q(s, a) + \alpha [R + \gamma Q(s&#39;, a&#39;) - Q(s, a)]\]</span> 也称它的<strong>target</strong>是 <span class="math inline">\(R_{t+1} + \gamma Q(S_{t+1}, a_{t+1})\)</span>。理解这个target代表的意义： <span class="math display">\[
+<h4 id="1-SarSa"><a href="#1-SarSa" class="headerlink" title="(1) SarSa"></a>(1) SarSa</h4><img src="/2017/11/05/DQN/sarsa.png" title="sarsa">  
+<p>SarSa中更新值函数的公式为：</p>
+<script type="math/tex; mode=display">Q(s, a) \leftarrow Q(s, a) + \alpha [R + \gamma Q(s', a') - Q(s, a)]</script><p>也称它的<strong>target</strong>是 $R_{t+1} + \gamma Q(S_{t+1}, a_{t+1})$。理解这个target代表的意义：</p>
+<script type="math/tex; mode=display">
 \begin{equation}
 \begin{split}
-V(s) &amp;= E[G_t | S_t = s] \\
-&amp;= E[R_{t+1} + \gamma G_{t+1} | S_t=s] \\ 
-&amp;= E[R_{t+1} + \gamma V(S_{t+1}) | S_t=s]
+V(s) &= E[G_t | S_t = s] \\
+&= E[R_{t+1} + \gamma G_{t+1} | S_t=s] \\ 
+&= E[R_{t+1} + \gamma V(S_{t+1}) | S_t=s]
 \end{split}
 \nonumber
-\end{equation}
-\]</span> 将V换成Q的话我们可以看到，SarSa target <span class="math inline">\(R_{t+1}+ \gamma Q(S_{t+1}, a_{t+1})\)</span> 是 <span class="math inline">\(Q(S_t, a_t)\)</span> 的估计值。</p>
-<p><strong>在值函数近似中，我们都是使用target来替代真实的值函数，即Loss中的真实值。</strong></p>
-<p>前面说过DQN是使用<span class="math inline">\(\epsilon-greedy\)</span>策略来输出action，SarSa和Q-Learning也是。SarSa中使用<span class="math inline">\(\epsilon-greedy\)</span>策略生成action <span class="math inline">\(a_{t+1}\)</span>，随即又用 <span class="math inline">\(a_{t+1}\)</span>处对应的值函数来计算target，更新上一步的值函数。这种学习方式又称为<strong>On-policy</strong>。</p>
+\end{equation}</script><p>将V换成Q的话我们可以看到，SarSa target $R_{t+1}+ \gamma Q(S_{t+1}, a_{t+1})$ 是 $Q(S_t, a_t)$ 的估计值。</p>
+<p><strong>在值函数近似中，我们都是使用target来替代真实的值函数，即Loss中的真实值。</strong>  </p>
+<p>前面说过DQN是使用$\epsilon-greedy$策略来输出action，SarSa和Q-Learning也是。SarSa中使用$\epsilon-greedy$策略生成action $a_{t+1}$，随即又用 $a_{t+1}$处对应的值函数来计算target，更新上一步的值函数。这种学习方式又称为<strong>On-policy</strong>。  </p>
 <p>SarSa属于On-policy Learning，而Q-Learning属于Off-policy Learning。</p>
-<h4 id="q-learning">(2) Q-Learning</h4>
-<img src="/2017/11/05/DQN/qlearning.png" title="qlearning">
-<p>Q-Learning的target是 <span class="math inline">\(R_{t+1} + \gamma max_{a&#39;} Q(S_{t+1}, a&#39;)\)</span>。它使用 <span class="math inline">\(\epsilon-greedy\)</span>策略来生成action <span class="math inline">\(a_{t+1}\)</span>，但用来计算target的action却不一定是<span class="math inline">\(a_{t+1}\)</span>，而是使得 <span class="math inline">\(Q(S_{t+1}, a)\)</span>最大的action。这种产生行为的策略和进行评估的策略不一样的方法称为Off-policy方法。对于Q-Learning来说，产生行为的策略是<span class="math inline">\(\epsilon-greedy\)</span>，而进行评估的策略是greedy。</p>
-<h4 id="dqn">(3) DQN</h4>
-<p>Off-policy是Q-Learning的特点，DQN中也延用了这一特点。而不同的是，Q-Learning中用来计算target和预测值的Q是同一个Q，也就是说使用了相同的神经网络。这样带来的一个问题就是，每次更新神经网络的时候，target也都会更新，这样会容易导致参数不收敛。回忆在有监督学习中，标签label都是固定的，不会随着参数的更新而改变。</p>
-<p>因此DQN在原来的Q网络的基础上又引入了一个<strong>target Q网络</strong>，即用来计算target的网络。它和Q网络结构一样，初始的权重也一样，只是Q网络每次迭代都会更新，而target Q网络是每隔一段时间才会更新。DQN的target是 <span class="math inline">\(R_{t+1} + \gamma max_{a&#39;} Q(S_{t+1}, a&#39;; \omega^{-})\)</span>。用 <span class="math inline">\(\omega^{-}\)</span>表示它比Q网络的权重 <span class="math inline">\(\omega\)</span>更新得要慢一些。</p>
+<h4 id="2-Q-Learning"><a href="#2-Q-Learning" class="headerlink" title="(2) Q-Learning"></a>(2) Q-Learning</h4><img src="/2017/11/05/DQN/qlearning.png" title="qlearning">  
+<p>Q-Learning的target是 $R_{t+1} + \gamma max_{a’} Q(S_{t+1}, a’)$。它使用 $\epsilon-greedy$策略来生成action $a_{t+1}$，但用来计算target的action却不一定是$a_{t+1}$，而是使得 $Q(S_{t+1}, a)$最大的action。这种产生行为的策略和进行评估的策略不一样的方法称为Off-policy方法。对于Q-Learning来说，产生行为的策略是$\epsilon-greedy$，而进行评估的策略是greedy。  </p>
+<h4 id="3-DQN"><a href="#3-DQN" class="headerlink" title="(3) DQN"></a>(3) DQN</h4><p>Off-policy是Q-Learning的特点，DQN中也延用了这一特点。而不同的是，Q-Learning中用来计算target和预测值的Q是同一个Q，也就是说使用了相同的神经网络。这样带来的一个问题就是，每次更新神经网络的时候，target也都会更新，这样会容易导致参数不收敛。回忆在有监督学习中，标签label都是固定的，不会随着参数的更新而改变。  </p>
+<p>因此DQN在原来的Q网络的基础上又引入了一个<strong>target Q网络</strong>，即用来计算target的网络。它和Q网络结构一样，初始的权重也一样，只是Q网络每次迭代都会更新，而target Q网络是每隔一段时间才会更新。DQN的target是 $R_{t+1} + \gamma max_{a’} Q(S_{t+1}, a’; \omega^{-})$。用 $\omega^{-}$表示它比Q网络的权重 $\omega$更新得要慢一些。</p>
 <p>理解了DQN的target之后也就可以理解DQN的Loss Function了。</p>
-<h3 id="dqn所做的改进">2、DQN所做的改进</h3>
-<p>相比于Q-Learning，DQN做的改进：一个是使用了卷积神经网络来逼近行为值函数，一个是使用了target Q network来更新target，还有一个是使用了经验回放Experience replay。</p>
+<h3 id="2、DQN所做的改进"><a href="#2、DQN所做的改进" class="headerlink" title="2、DQN所做的改进"></a>2、DQN所做的改进</h3><p>相比于Q-Learning，DQN做的改进：一个是使用了卷积神经网络来逼近行为值函数，一个是使用了target Q network来更新target，还有一个是使用了经验回放Experience replay。  </p>
 <p>由于在强化学习中，我们得到的观测数据是有序的，step by step的，用这样的数据去更新神经网络的参数会有问题。回忆在有监督学习中，数据之间都是独立的。因此DQN中使用经验回放，即用一个Memory来存储经历过的数据，每次更新参数的时候从Memory中抽取一部分的数据来用于更新，以此来打破数据间的关联。</p>
-<h2 id="三算法整体流程">三、算法整体流程</h2>
-<ul>
-<li>首先初始化Memory D，它的容量为N;<br>
-</li>
-<li>初始化Q网络，随机生成权重<span class="math inline">\(\omega\)</span>;<br>
-</li>
-<li>初始化target Q网络，权重为<span class="math inline">\(\omega^- = \omega\)</span>;<br>
-</li>
-<li>循环遍历episode =1, 2, …, M:<br>
-</li>
-<li>初始化initial state <span class="math inline">\(S_1\)</span>;<br>
-</li>
-<li>循环遍历step =1,2,…, T:
-<ul>
-<li>用<span class="math inline">\(\epsilon-greedy\)</span>策略生成action <span class="math inline">\(a_t\)</span>：以<span class="math inline">\(\epsilon\)</span>概率选择一个随机的action，或选择<span class="math inline">\(a_t = max_a Q(S_t, a; \omega)\)</span>;<br>
-</li>
-<li>执行action <span class="math inline">\(a_t\)</span>，接收reward <span class="math inline">\(r_t\)</span>及新的state <span class="math inline">\(S_{t+1}\)</span>;<br>
-</li>
-<li>将transition样本 <span class="math inline">\((S_t, a_t, r_t, S_{t+1})\)</span>存入D中；<br>
-</li>
-<li>从D中随机抽取一个minibatch的transitions <span class="math inline">\((S_j, a_j, r_j, S_{j+1})\)</span>；<br>
-</li>
-<li>令<span class="math inline">\(y_j = r_j\)</span>，如果 <span class="math inline">\(j+1\)</span>步是terminal的话，否则，令 <span class="math inline">\(y_j = r_j + \gamma max_{a&#39;} Q(S_{t+1}, a&#39;; \omega^-)\)</span>；<br>
-</li>
-<li>对<span class="math inline">\((y_j - Q(S_t, a_j; \omega))^2\)</span>关于<span class="math inline">\(\omega\)</span>使用梯度下降法进行更新；<br>
-</li>
-<li>每隔C steps更新target Q网络，<span class="math inline">\(\omega^- = \omega\)</span>。<br>
-</li>
-</ul></li>
-<li>End For;<br>
-</li>
-<li>End For.</li>
+<h2 id="三、算法整体流程"><a href="#三、算法整体流程" class="headerlink" title="三、算法整体流程"></a>三、算法整体流程</h2><ul>
+<li>首先初始化Memory D，它的容量为N;  </li>
+<li>初始化Q网络，随机生成权重$\omega$;  </li>
+<li>初始化target Q网络，权重为$\omega^- = \omega$;  </li>
+<li>循环遍历episode =1, 2, …, M:  <ul>
+<li>初始化initial state $S_1$;  </li>
+<li>循环遍历step =1,2,…, T:    <ul>
+<li>用$\epsilon-greedy$策略生成action $a_t$：以$\epsilon$概率选择一个随机的action，或选择$a_t = max_a Q(S_t, a; \omega)$;  </li>
+<li>执行action $a_t$，接收reward $r_t$及新的state $S_{t+1}$;  </li>
+<li>将transition样本 $(S_t, a_t, r_t, S_{t+1})$存入D中；  </li>
+<li>从D中随机抽取一个minibatch的transitions $(S_j, a_j, r_j, S_{j+1})$；  </li>
+<li>令$y_j = r_j$，如果 $j+1$步是terminal的话，否则，令 $y_j = r_j + \gamma max_{a’} Q(S_{t+1}, a’; \omega^-)$；    </li>
+<li>对$(y_j - Q(S_t, a_j; \omega))^2$关于$\omega$使用梯度下降法进行更新；  </li>
+<li>每隔C steps更新target Q网络，$\omega^- = \omega$。  </li>
 </ul>
-<p>附上原文的算法流程：<br>
-<img src="/2017/11/05/DQN/dqn.png" title="dqn"></p>
-<h2 id="四epsilon-greedy策略">四、<span class="math inline">\(\epsilon-greedy\)</span>策略</h2>
-<p><span class="math inline">\(greedy\)</span>策略，顾名思义，是一种贪婪策略，它每次都选择使得值函数最大的action，即<span class="math inline">\(a_t = max_a Q(S_t, a; \omega)\)</span>。但是这种方式有问题，就是对于采样中没有出现过的(state, action) 对，由于没有评估，没有Q值，之后也不会再被采到。</p>
-<p>其实这里涉及到了强化学习中一个非常重要的概念，叫Exploration &amp; Exploitation，探索与利用。前者强调发掘环境中的更多信息，并不局限在已知的信息中；后者强调从已知的信息中最大化奖励。而<span class="math inline">\(greedy\)</span>策略只注重了后者，没有涉及前者。所以它并不是一个好的策略。</p>
-<p>而<span class="math inline">\(\epsilon-greedy\)</span>策略兼具了探索与利用，它以<span class="math inline">\(\epsilon\)</span>的概率从所有的action中随机抽取一个，以<span class="math inline">\(1- \epsilon\)</span>的概率抽取<span class="math inline">\(a_t = max_a Q(S_t, a; \omega)\)</span>。</p>
+</li>
+<li>End For;  </li>
+</ul>
+</li>
+<li>End For.  </li>
+</ul>
+<p>附上原文的算法流程：<br><img src="/2017/11/05/DQN/dqn.png" title="dqn">  </p>
+<h2 id="四、-epsilon-greedy-策略"><a href="#四、-epsilon-greedy-策略" class="headerlink" title="四、$\epsilon-greedy$策略"></a>四、$\epsilon-greedy$策略</h2><p>$greedy$策略，顾名思义，是一种贪婪策略，它每次都选择使得值函数最大的action，即$a_t = max_a Q(S_t, a; \omega)$。但是这种方式有问题，就是对于采样中没有出现过的(state, action) 对，由于没有评估，没有Q值，之后也不会再被采到。  </p>
+<p>其实这里涉及到了强化学习中一个非常重要的概念，叫Exploration &amp; Exploitation，探索与利用。前者强调发掘环境中的更多信息，并不局限在已知的信息中；后者强调从已知的信息中最大化奖励。而$greedy$策略只注重了后者，没有涉及前者。所以它并不是一个好的策略。  </p>
+<p>而$\epsilon-greedy$策略兼具了探索与利用，它以$\epsilon$的概率从所有的action中随机抽取一个，以$1- \epsilon$的概率抽取$a_t = max_a Q(S_t, a; \omega)$。  </p>
 <p>强化学习正是因为有了探索Exploration，才会常常有一些出人意表的现象，才会更加与其他机器学习不同。例如智能体在围棋游戏中走出一些人类经验之外的好棋局。</p>
 <p><em>原创文章，欢迎留言点赞共同进步</em></p>
 
@@ -454,7 +430,7 @@ V(s) &amp;= E[G_t | S_t = s] \\
                 </span>
                 <span class="tooltip-content">
                     <div class="toc-article">
-                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一-概述"><span class="toc-number">1.</span> <span class="toc-text">一、 概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二算法原理"><span class="toc-number">2.</span> <span class="toc-text">二、算法原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#loss-function"><span class="toc-number">2.1.</span> <span class="toc-text">1、Loss Function</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#monte-carlo"><span class="toc-number">2.1.1.</span> <span class="toc-text">(1) Monte Carlo</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#temporal-difference-sarsa"><span class="toc-number">2.1.2.</span> <span class="toc-text">(2) Temporal Difference / SarSa</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#sarsa"><span class="toc-number">2.1.3.</span> <span class="toc-text">(1) SarSa</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#q-learning"><span class="toc-number">2.1.4.</span> <span class="toc-text">(2) Q-Learning</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#dqn"><span class="toc-number">2.1.5.</span> <span class="toc-text">(3) DQN</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#dqn所做的改进"><span class="toc-number">2.2.</span> <span class="toc-text">2、DQN所做的改进</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三算法整体流程"><span class="toc-number">3.</span> <span class="toc-text">三、算法整体流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四epsilon-greedy策略"><span class="toc-number">4.</span> <span class="toc-text">四、\(\epsilon-greedy\)策略</span></a></li></ol>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一、-概述"><span class="toc-number">1.</span> <span class="toc-text">一、 概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二、算法原理"><span class="toc-number">2.</span> <span class="toc-text">二、算法原理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1、Loss-Function"><span class="toc-number">2.1.</span> <span class="toc-text">1、Loss Function</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-Monte-Carlo"><span class="toc-number">2.1.1.</span> <span class="toc-text">(1) Monte Carlo</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-Temporal-Difference-SarSa"><span class="toc-number">2.1.2.</span> <span class="toc-text">(2) Temporal Difference  / SarSa</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#1-SarSa"><span class="toc-number">2.1.3.</span> <span class="toc-text">(1) SarSa</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-Q-Learning"><span class="toc-number">2.1.4.</span> <span class="toc-text">(2) Q-Learning</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-DQN"><span class="toc-number">2.1.5.</span> <span class="toc-text">(3) DQN</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2、DQN所做的改进"><span class="toc-number">2.2.</span> <span class="toc-text">2、DQN所做的改进</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三、算法整体流程"><span class="toc-number">3.</span> <span class="toc-text">三、算法整体流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四、-epsilon-greedy-策略"><span class="toc-number">4.</span> <span class="toc-text">四、$\epsilon-greedy$策略</span></a></li></ol>
                     </div>
                 </span>
             </div>
