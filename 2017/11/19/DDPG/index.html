@@ -79,13 +79,13 @@
 
 
 
-<meta name="description" content="MathJax.Hub.Config({ tex2jax: {inlineMath: [[&apos;$&apos;,&apos;$&apos;], [&apos;\\(&apos;,&apos;\\)&apos;]]} });      一、 概述在DQN中有讲过，DQN是一种 model free（无环境模型）, off-policy（产生行为的策略和进行评估的策略不一样）的强化学习算法。DDPG (Deep Deterministic Policy Gradient)">
+<meta name="description" content="MathJax.Hub.Config({ tex2jax: {inlineMath: [[&apos;$&apos;,&apos;$&apos;], [&apos;\\(&apos;,&apos;\\)&apos;]]} });    一、 概述 在DQN中有讲过，DQN是一种 model free（无环境模型）, off-policy（产生行为的策略和进行评估的策略不一样）的强化学习算法。DDPG (Deep Deterministic Policy Gradient)算">
 <meta name="keywords" content="强化学习">
 <meta property="og:type" content="article">
 <meta property="og:title" content="强化学习—DDPG算法原理详解">
 <meta property="og:url" content="https://wanjun0511.github.io/2017/11/19/DDPG/index.html">
 <meta property="og:site_name" content="Wanjun&#39;s blog">
-<meta property="og:description" content="MathJax.Hub.Config({ tex2jax: {inlineMath: [[&apos;$&apos;,&apos;$&apos;], [&apos;\\(&apos;,&apos;\\)&apos;]]} });      一、 概述在DQN中有讲过，DQN是一种 model free（无环境模型）, off-policy（产生行为的策略和进行评估的策略不一样）的强化学习算法。DDPG (Deep Deterministic Policy Gradient)">
+<meta property="og:description" content="MathJax.Hub.Config({ tex2jax: {inlineMath: [[&apos;$&apos;,&apos;$&apos;], [&apos;\\(&apos;,&apos;\\)&apos;]]} });    一、 概述 在DQN中有讲过，DQN是一种 model free（无环境模型）, off-policy（产生行为的策略和进行评估的策略不一样）的强化学习算法。DDPG (Deep Deterministic Policy Gradient)算">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="https://wanjun0511.github.io/2017/11/19/DDPG/critic.jpeg">
 <meta property="og:image" content="https://wanjun0511.github.io/2017/11/19/DDPG/actor.jpeg">
@@ -93,7 +93,7 @@
 <meta property="og:updated_time" content="2017-12-24T13:26:34.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="强化学习—DDPG算法原理详解">
-<meta name="twitter:description" content="MathJax.Hub.Config({ tex2jax: {inlineMath: [[&apos;$&apos;,&apos;$&apos;], [&apos;\\(&apos;,&apos;\\)&apos;]]} });      一、 概述在DQN中有讲过，DQN是一种 model free（无环境模型）, off-policy（产生行为的策略和进行评估的策略不一样）的强化学习算法。DDPG (Deep Deterministic Policy Gradient)">
+<meta name="twitter:description" content="MathJax.Hub.Config({ tex2jax: {inlineMath: [[&apos;$&apos;,&apos;$&apos;], [&apos;\\(&apos;,&apos;\\)&apos;]]} });    一、 概述 在DQN中有讲过，DQN是一种 model free（无环境模型）, off-policy（产生行为的策略和进行评估的策略不一样）的强化学习算法。DDPG (Deep Deterministic Policy Gradient)算">
 <meta name="twitter:image" content="https://wanjun0511.github.io/2017/11/19/DDPG/critic.jpeg">
 
 
@@ -350,36 +350,51 @@ MathJax.Hub.Config({
 tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
 });
 </script>
-
 <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
 </script>
-
-<h2 id="一、-概述"><a href="#一、-概述" class="headerlink" title="一、 概述"></a>一、 概述</h2><p>在<a href="https://wanjun0511.github.io/2017/11/05/DQN/">DQN</a>中有讲过，DQN是一种 model free（无环境模型）, off-policy（产生行为的策略和进行评估的策略不一样）的强化学习算法。DDPG (Deep Deterministic Policy Gradient)算法也是model free, off-policy的，且同样使用了深度神经网络用于函数近似。但与DQN不同的是，DQN只能解决离散且维度不高的action spaces的问题，这一点请回忆DQN的神经网络的输出。而DDPG可以解决<strong>连续动作空间</strong>问题。另外，DQN是value based方法，即只有一个值函数网络，而DDPG是actor-critic方法，即既有值函数网络(critic)，又有策略网络(actor)。</p>
+<h2 id="一-概述">一、 概述</h2>
+<p>在<a href="https://wanjun0511.github.io/2017/11/05/DQN/">DQN</a>中有讲过，DQN是一种 model free（无环境模型）, off-policy（产生行为的策略和进行评估的策略不一样）的强化学习算法。DDPG (Deep Deterministic Policy Gradient)算法也是model free, off-policy的，且同样使用了深度神经网络用于函数近似。但与DQN不同的是，DQN只能解决离散且维度不高的action spaces的问题，这一点请回忆DQN的神经网络的输出。而DDPG可以解决<strong>连续动作空间</strong>问题。另外，DQN是value based方法，即只有一个值函数网络，而DDPG是actor-critic方法，即既有值函数网络(critic)，又有策略网络(actor)。</p>
 <p>DDPG算法原文链接： <a href="https://arxiv.org/pdf/1509.02971.pdf" target="_blank" rel="external">DDPG</a></p>
-<h2 id="二、算法原理"><a href="#二、算法原理" class="headerlink" title="二、算法原理"></a>二、算法原理</h2><a id="more"></a>
-<p>在<a href="https://wanjun0511.github.io/2017/11/04/强化学习-基本概念/">基本概念</a>中有说过，强化学习是一个反复迭代的过程，每一次迭代要解决两个问题：给定一个策略求值函数，和根据值函数来更新策略。 </p>
-<p>DDPG中使用一个神经网络来近似值函数，此值函数网络又称<strong>critic网络</strong>，它的输入是 action与observation $[a, s]$，输出是$Q(s, a)$；另外使用一个神经网络来近似策略函数，此policy网络又称<strong>actor网络</strong>，它的输入是observation $s$，输出是action $a$.</p>
-<img src="/2017/11/19/DDPG/critic.jpeg" title="critic-network">  
-<p><em>critic:</em> $Q(s, a; \omega)$<br><em>target critic:</em> $Q(s, a; \omega^-)$</p>
-<img src="/2017/11/19/DDPG/actor.jpeg" title="actor-network">  
-<p><em>actor:</em> $a = \pi(s; \theta)$<br><em>target actor:</em> $a = \pi(s; \theta^-)$</p>
+<h2 id="二算法原理">二、算法原理</h2>
+<a id="more"></a>
+<p>在<a href="https://wanjun0511.github.io/2017/11/04/强化学习-基本概念/">基本概念</a>中有说过，强化学习是一个反复迭代的过程，每一次迭代要解决两个问题：给定一个策略求值函数，和根据值函数来更新策略。</p>
+<p>DDPG中使用一个神经网络来近似值函数，此值函数网络又称<strong>critic网络</strong>，它的输入是 action与observation <span class="math inline">\([a, s]\)</span>，输出是<span class="math inline">\(Q(s, a)\)</span>；另外使用一个神经网络来近似策略函数，此policy网络又称<strong>actor网络</strong>，它的输入是observation <span class="math inline">\(s\)</span>，输出是action <span class="math inline">\(a\)</span>.</p>
+<img src="/2017/11/19/DDPG/critic.jpeg" title="critic-network">
+<p><em>critic:</em> <span class="math inline">\(Q(s, a; \omega)\)</span><br>
+<em>target critic:</em> <span class="math inline">\(Q(s, a; \omega^-)\)</span></p>
+<img src="/2017/11/19/DDPG/actor.jpeg" title="actor-network">
+<p><em>actor:</em> <span class="math inline">\(a = \pi(s; \theta)\)</span><br>
+<em>target actor:</em> <span class="math inline">\(a = \pi(s; \theta^-)\)</span></p>
 <p>这两个网络之间的联系是这样的：首先环境会给出一个obs，智能体根据<strong>actor网络</strong>（后面会讲到在此网络基础上增加噪声）做出决策action，环境收到此action后会给出一个奖励Rew，及新的obs。这个过程是一个step。此时我们要根据Rew去更新<strong>critic网络</strong>，然后沿<strong>critic</strong>建议的方向去更新<strong>actor</strong>网络。接着进入下一个step。如此循环下去，直到我们训练出了一个好的actor网络。</p>
 <p>那么每次迭代如何更新这两个神经网络的参数呢？</p>
-<p>与DQN一样，DDPG中也使用了target网络来保证参数的收敛。假设critic网络为$Q(s, a; \omega)$， 它对应的target critic网络为$Q(s, a; \omega^-)$。actor网络为$\pi(s; \theta)$，它对应的target actor网络为$\pi(s; \theta^-)$。</p>
-<h3 id="1、critic网络更新"><a href="#1、critic网络更新" class="headerlink" title="1、critic网络更新"></a>1、critic网络更新</h3><p>critic网络用于值函数近似，更新方式与DQN中的类似。</p>
-<script type="math/tex; mode=display">target_t = R_{t+1} + \gamma Q(S_{t+1}, \pi(S_{t+1}; \theta^-); \omega^-)</script><script type="math/tex; mode=display">Loss = \frac{1}{N} \sum_{t=1}^N (target_t - Q(S_t, a_t; \omega))^2</script><p>然后使用梯度下降法进行更新。注意，actor和critic都使用了target网络来计算target。  </p>
-<h3 id="2、actor网络更新"><a href="#2、actor网络更新" class="headerlink" title="2、actor网络更新"></a>2、actor网络更新</h3><p>actor网络用于参数化策略。这里涉及到强化学习中一个非常重要的概念：<strong>策略梯度Policy Gradient</strong>。</p>
-<p>如何评价一个策略的好坏？首先我们要有一个目标，称为policy objective function，记为$J(\theta)$。我们希望求得$\theta$使得$J(\theta)$取得最大值。$J(\theta)$对$\theta$的导数 $\bigtriangledown_\theta J(\theta)$即为<strong>策略梯度</strong>。</p>
+<p>与DQN一样，DDPG中也使用了target网络来保证参数的收敛。假设critic网络为<span class="math inline">\(Q(s, a; \omega)\)</span>， 它对应的target critic网络为<span class="math inline">\(Q(s, a; \omega^-)\)</span>。actor网络为<span class="math inline">\(\pi(s; \theta)\)</span>，它对应的target actor网络为<span class="math inline">\(\pi(s; \theta^-)\)</span>。</p>
+<h3 id="critic网络更新">1、critic网络更新</h3>
+<p>critic网络用于值函数近似，更新方式与DQN中的类似。</p>
+<p><span class="math display">\[target_t = R_{t+1} + \gamma Q(S_{t+1}, \pi(S_{t+1}; \theta^-); \omega^-)\]</span></p>
+<p><span class="math display">\[Loss = \frac{1}{N} \sum_{t=1}^N (target_t - Q(S_t, a_t; \omega))^2\]</span></p>
+<p>然后使用梯度下降法进行更新。注意，actor和critic都使用了target网络来计算target。</p>
+<h3 id="actor网络更新">2、actor网络更新</h3>
+<p>actor网络用于参数化策略。这里涉及到强化学习中一个非常重要的概念：<strong>策略梯度Policy Gradient</strong>。</p>
+<p>如何评价一个策略的好坏？首先我们要有一个目标，称为policy objective function，记为<span class="math inline">\(J(\theta)\)</span>。我们希望求得<span class="math inline">\(\theta\)</span>使得<span class="math inline">\(J(\theta)\)</span>取得最大值。<span class="math inline">\(J(\theta)\)</span>对<span class="math inline">\(\theta\)</span>的导数 <span class="math inline">\(\bigtriangledown_\theta J(\theta)\)</span>即为<strong>策略梯度</strong>。</p>
 <p>策略梯度这一块可以分为四种情况分别讨论：stochastic on-policy, stochastic off-policy, deterministic on-policy 和 deterministic off-policy。David Silver的课程中详细的介绍了第一种。DPG论文的第二部分讲了第二种，第四部分讲了第三四种。由于DDPG中的策略是deterministic的，本文只介绍最后两种。</p>
-<p>直观上来说，我们应该朝着使得值函数$Q$值增大的方向去更新策略的参数$\theta$。记策略为 $a = \pi_{\theta}(s)$, $J(\pi_{\theta}) = \int_s d^{\pi}(s) Q(s, \pi_{\theta}(s))ds = E_{s \sim d^{\pi}} [Q(s, \pi_{\theta}(s))]$，有以下定理：</p>
-<p><strong>Deterministic Policy Gradient Theorem</strong>:<br>$\bigtriangledown_\theta J(\pi_{\theta}) = \int_s d^{\pi}(s) \bigtriangledown_\theta \pi_{\theta}(s) \bigtriangledown_a Q^{\pi}(s, a) |_{a = \pi_{\theta}(s)} ds = E_{s \sim d^{\pi}} [\bigtriangledown_\theta \pi_{\theta}(s) \bigtriangledown_a Q^{\pi}(s, a) |_{a = \pi_{\theta}(s)}]$  </p>
+<p>直观上来说，我们应该朝着使得值函数<span class="math inline">\(Q\)</span>值增大的方向去更新策略的参数<span class="math inline">\(\theta\)</span>。记策略为 <span class="math inline">\(a = \pi_{\theta}(s)\)</span>, <span class="math inline">\(J(\pi_{\theta}) = \int_s d^{\pi}(s) Q(s, \pi_{\theta}(s))ds = E_{s \sim d^{\pi}} [Q(s, \pi_{\theta}(s))]\)</span>，有以下定理：</p>
+<p><strong>Deterministic Policy Gradient Theorem</strong>:<br>
+<span class="math inline">\(\bigtriangledown_\theta J(\pi_{\theta}) = \int_s d^{\pi}(s) \bigtriangledown_\theta \pi_{\theta}(s) \bigtriangledown_a Q^{\pi}(s, a) |_{a = \pi_{\theta}(s)} ds = E_{s \sim d^{\pi}} [\bigtriangledown_\theta \pi_{\theta}(s) \bigtriangledown_a Q^{\pi}(s, a) |_{a = \pi_{\theta}(s)}]\)</span></p>
 <p>确定性策略梯度定理提供了更新确定性策略的方法。将此方法用到Actor-Critic算法中：</p>
-<h4 id="1-On-Policy-Deterministic-Actor-Critic"><a href="#1-On-Policy-Deterministic-Actor-Critic" class="headerlink" title="(1) On-Policy Deterministic Actor-Critic"></a>(1) On-Policy Deterministic Actor-Critic</h4><p>TD Error: $\delta_t = R_{t+1} + \gamma Q(S_{t+1}, a_{t+1}; \omega) - Q(S_{t}, a_{t}; \omega)$<br>更新critic: $\Delta \omega = \alpha_\omega \cdot \delta_t \cdot \bigtriangledown_\omega Q(S_{t}, a_{t}; \omega)$ (SARSA)<br>更新actor: $\Delta \theta = \alpha_\theta \cdot \bigtriangledown_\theta \pi_{\theta}(S_t) \bigtriangledown_a Q(S_t, a_t; \omega) |_{a = \pi_{\theta}(s)}$    </p>
-<h4 id="2-Off-Policy-Deterministic-Actor-Critic"><a href="#2-Off-Policy-Deterministic-Actor-Critic" class="headerlink" title="(2) Off-Policy Deterministic Actor-Critic"></a>(2) Off-Policy Deterministic Actor-Critic</h4><p>TD Error: $\delta_t = R_{t+1} + \gamma Q(S_{t+1}, \pi_\theta(S_{t+1}); \omega) - Q(S_{t}, a_{t}; \omega)$<br>更新critic: $\Delta \omega = \alpha_\omega \cdot \delta_t \cdot \bigtriangledown_\omega Q(S_{t}, a_{t}; \omega)$ (Q-Learning)<br>更新actor: $\Delta \theta = \alpha_\theta \cdot \bigtriangledown_\theta \pi_{\theta}(S_t) \bigtriangledown_a Q(S_t, a_t; \omega) |_{a = \pi_{\theta}(s)}$</p>
-<p>注意，在off-policy中，用于生成行为数据的策略和用于评估的策略不是同一个策略，也就是说，智能体实际上采取的action $a_{t+1}$ 不是由$\pi_{\theta}$生成的。假设它是由$\beta$生成的。在DDPG中，$\beta$策略是在$\pi$策略上增加了随机噪声random process，用来保证探索exploration。</p>
-<p>理论上，这里引入了两种bias：一个是Deterministic Policy Gradient Theorem中的$Q^{\pi}(s, a)$，我们实际上用的是它的近似函数$Q(s, a; \omega)$；另一个是在off-policy中，行为策略与评估策略不同，理论上是需要引入importance sampling来进行修正的。实际上，这两个bias都通过满足了一个定理的条件来得以保证。详见Compatible Function Approximation.</p>
-<h2 id="三、算法整体流程"><a href="#三、算法整体流程" class="headerlink" title="三、算法整体流程"></a>三、算法整体流程</h2><p>回顾DQN在Q-Learning基础上所做的改进：使用了深度神经网络做函数近似；使用经验回放；使用target网络。DDPG类似的也使用了深度神经网络，经验回放和target网络。不过DQN中的target更新是hard update，即每隔固定步数更新一次target网络，DDPG使用soft update，每一步都会更新target网络，只不过更新的幅度非常小。</p>
-<p>附上原文的算法流程：<br><img src="/2017/11/19/DDPG/DDPG.png" title="DDPG">  </p>
+<h4 id="on-policy-deterministic-actor-critic">(1) On-Policy Deterministic Actor-Critic</h4>
+<p>TD Error: <span class="math inline">\(\delta_t = R_{t+1} + \gamma Q(S_{t+1}, a_{t+1}; \omega) - Q(S_{t}, a_{t}; \omega)\)</span><br>
+更新critic: <span class="math inline">\(\Delta \omega = \alpha_\omega \cdot \delta_t \cdot \bigtriangledown_\omega Q(S_{t}, a_{t}; \omega)\)</span> (SARSA)<br>
+更新actor: <span class="math inline">\(\Delta \theta = \alpha_\theta \cdot \bigtriangledown_\theta \pi_{\theta}(S_t) \bigtriangledown_a Q(S_t, a_t; \omega) |_{a = \pi_{\theta}(s)}\)</span></p>
+<h4 id="off-policy-deterministic-actor-critic">(2) Off-Policy Deterministic Actor-Critic</h4>
+<p>TD Error: <span class="math inline">\(\delta_t = R_{t+1} + \gamma Q(S_{t+1}, \pi_\theta(S_{t+1}); \omega) - Q(S_{t}, a_{t}; \omega)\)</span><br>
+更新critic: <span class="math inline">\(\Delta \omega = \alpha_\omega \cdot \delta_t \cdot \bigtriangledown_\omega Q(S_{t}, a_{t}; \omega)\)</span> (Q-Learning)<br>
+更新actor: <span class="math inline">\(\Delta \theta = \alpha_\theta \cdot \bigtriangledown_\theta \pi_{\theta}(S_t) \bigtriangledown_a Q(S_t, a_t; \omega) |_{a = \pi_{\theta}(s)}\)</span></p>
+<p>注意，在off-policy中，用于生成行为数据的策略和用于评估的策略不是同一个策略，也就是说，智能体实际上采取的action <span class="math inline">\(a_{t+1}\)</span> 不是由<span class="math inline">\(\pi_{\theta}\)</span>生成的。假设它是由<span class="math inline">\(\beta\)</span>生成的。在DDPG中，<span class="math inline">\(\beta\)</span>策略是在<span class="math inline">\(\pi\)</span>策略上增加了随机噪声random process，用来保证探索exploration。</p>
+<p>理论上，这里引入了两种bias：一个是Deterministic Policy Gradient Theorem中的<span class="math inline">\(Q^{\pi}(s, a)\)</span>，我们实际上用的是它的近似函数<span class="math inline">\(Q(s, a; \omega)\)</span>；另一个是在off-policy中，行为策略与评估策略不同，理论上是需要引入importance sampling来进行修正的。实际上，这两个bias都通过满足了一个定理的条件来得以保证。详见Compatible Function Approximation.</p>
+<h2 id="三算法整体流程">三、算法整体流程</h2>
+<p>回顾DQN在Q-Learning基础上所做的改进：使用了深度神经网络做函数近似；使用经验回放；使用target网络。DDPG类似的也使用了深度神经网络，经验回放和target网络。不过DQN中的target更新是hard update，即每隔固定步数更新一次target网络，DDPG使用soft update，每一步都会更新target网络，只不过更新的幅度非常小。</p>
+<p>附上原文的算法流程：<br>
+<img src="/2017/11/19/DDPG/DDPG.png" title="DDPG"></p>
 <p><em>原创文章，欢迎留言点赞共同进步</em></p>
 
       
@@ -612,7 +627,7 @@ tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、-概述"><span class="nav-text">一、 概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、算法原理"><span class="nav-text">二、算法原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1、critic网络更新"><span class="nav-text">1、critic网络更新</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2、actor网络更新"><span class="nav-text">2、actor网络更新</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-On-Policy-Deterministic-Actor-Critic"><span class="nav-text">(1) On-Policy Deterministic Actor-Critic</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-Off-Policy-Deterministic-Actor-Critic"><span class="nav-text">(2) Off-Policy Deterministic Actor-Critic</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、算法整体流程"><span class="nav-text">三、算法整体流程</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一-概述"><span class="nav-text">一、 概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二算法原理"><span class="nav-text">二、算法原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#critic网络更新"><span class="nav-text">1、critic网络更新</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#actor网络更新"><span class="nav-text">2、actor网络更新</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#on-policy-deterministic-actor-critic"><span class="nav-text">(1) On-Policy Deterministic Actor-Critic</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#off-policy-deterministic-actor-critic"><span class="nav-text">(2) Off-Policy Deterministic Actor-Critic</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三算法整体流程"><span class="nav-text">三、算法整体流程</span></a></li></ol></div>
             
 
           </div>
