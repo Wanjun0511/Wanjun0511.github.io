@@ -4,8 +4,48 @@
 
     
   <url>
+    <loc>https://wanjun0511.github.io/2017/11/04/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</loc>
+    <lastmod>2018-03-04T10:24:08.000Z</lastmod>
+    <data>
+        <display>
+        <title>强化学习-基本概念</title>
+        <pubTime>2017-11-04T05:05:00.000Z</pubTime>
+        
+        <tag>强化学习</tag>
+         
+         
+           
+             
+              <breadCrumb title="基本概念" url="https://wanjun0511.github.io/categories/%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
+    <loc>https://wanjun0511.github.io/2017/11/05/DQN/</loc>
+    <lastmod>2018-03-04T10:24:05.000Z</lastmod>
+    <data>
+        <display>
+        <title>强化学习—DQN算法原理详解</title>
+        <pubTime>2017-11-05T04:57:00.000Z</pubTime>
+        
+        <tag>强化学习</tag>
+         
+         
+           
+             
+              <breadCrumb title="DQN" url="https://wanjun0511.github.io/categories/DQN/"/>
+          
+        </display>
+    </data>
+    </url>
+
+    
+  <url>
     <loc>https://wanjun0511.github.io/2017/11/19/DDPG/</loc>
-    <lastmod>2017-12-24T13:26:34.000Z</lastmod>
+    <lastmod>2018-03-04T10:24:02.000Z</lastmod>
     <data>
         <display>
         <title>强化学习—DDPG算法原理详解</title>
@@ -35,46 +75,6 @@
          
          
            
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://wanjun0511.github.io/2017/11/05/DQN/</loc>
-    <lastmod>2017-12-19T11:38:07.000Z</lastmod>
-    <data>
-        <display>
-        <title>强化学习—DQN算法原理详解</title>
-        <pubTime>2017-11-05T04:57:00.000Z</pubTime>
-        
-        <tag>强化学习</tag>
-         
-         
-           
-             
-              <breadCrumb title="DQN" url="https://wanjun0511.github.io/categories/DQN/"/>
-          
-        </display>
-    </data>
-    </url>
-
-    
-  <url>
-    <loc>https://wanjun0511.github.io/2017/11/04/%E5%BC%BA%E5%8C%96%E5%AD%A6%E4%B9%A0-%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/</loc>
-    <lastmod>2017-11-14T13:55:05.000Z</lastmod>
-    <data>
-        <display>
-        <title>强化学习-基本概念</title>
-        <pubTime>2017-11-04T05:05:00.000Z</pubTime>
-        
-        <tag>强化学习</tag>
-         
-         
-           
-             
-              <breadCrumb title="基本概念" url="https://wanjun0511.github.io/categories/%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5/"/>
-          
         </display>
     </data>
     </url>

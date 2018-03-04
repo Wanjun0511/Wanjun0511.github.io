@@ -93,7 +93,7 @@
 <meta property="og:image" content="https://wanjun0511.github.io/2017/11/05/DQN/sarsa.png">
 <meta property="og:image" content="https://wanjun0511.github.io/2017/11/05/DQN/qlearning.png">
 <meta property="og:image" content="https://wanjun0511.github.io/2017/11/05/DQN/dqn.png">
-<meta property="og:updated_time" content="2017-12-19T11:38:07.000Z">
+<meta property="og:updated_time" content="2018-03-04T10:24:05.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="强化学习—DQN算法原理详解">
 <meta name="twitter:description" content="MathJax.Hub.Config({ tex2jax: {inlineMath: [[&apos;$&apos;,&apos;$&apos;], [&apos;\\(&apos;,&apos;\\)&apos;]]} });    一、 概述 强化学习算法可以分为三大类：value based, policy based 和 actor critic。常见的是以DQN为代表的value based算法，这种算法中只有一个值函数网络，没有policy网络，以及以DDPG,">
@@ -456,7 +456,8 @@ V(s) &amp;= E[G_t | S_t = s] \\
 <p>其实这里涉及到了强化学习中一个非常重要的概念，叫Exploration &amp; Exploitation，探索与利用。前者强调发掘环境中的更多信息，并不局限在已知的信息中；后者强调从已知的信息中最大化奖励。而<span class="math inline">\(greedy\)</span>策略只注重了后者，没有涉及前者。所以它并不是一个好的策略。</p>
 <p>而<span class="math inline">\(\epsilon-greedy\)</span>策略兼具了探索与利用，它以<span class="math inline">\(\epsilon\)</span>的概率从所有的action中随机抽取一个，以<span class="math inline">\(1- \epsilon\)</span>的概率抽取<span class="math inline">\(a_t = max_a Q(S_t, a; \omega)\)</span>。</p>
 <p>强化学习正是因为有了探索Exploration，才会常常有一些出人意表的现象，才会更加与其他机器学习不同。例如智能体在围棋游戏中走出一些人类经验之外的好棋局。</p>
-<p><em>原创文章，欢迎留言点赞共同进步</em></p>
+<h2 id="参考资料">参考资料：</h2>
+<p>David Silver的课程：www0.cs.ucl.ac.uk/staff/D.Silver/web/Teaching.html</p>
 
       
     </div>
@@ -688,7 +689,7 @@ V(s) &amp;= E[G_t | S_t = s] \\
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一-概述"><span class="nav-text">一、 概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二算法原理"><span class="nav-text">二、算法原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#loss-function"><span class="nav-text">1、Loss Function</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#monte-carlo"><span class="nav-text">(1) Monte Carlo</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#temporal-difference-sarsa"><span class="nav-text">(2) Temporal Difference / SarSa</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#sarsa"><span class="nav-text">(1) SarSa</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#q-learning"><span class="nav-text">(2) Q-Learning</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#dqn"><span class="nav-text">(3) DQN</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dqn所做的改进"><span class="nav-text">2、DQN所做的改进</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三算法整体流程"><span class="nav-text">三、算法整体流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四epsilon-greedy策略"><span class="nav-text">四、\(\epsilon-greedy\)策略</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一-概述"><span class="nav-text">一、 概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二算法原理"><span class="nav-text">二、算法原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#loss-function"><span class="nav-text">1、Loss Function</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#monte-carlo"><span class="nav-text">(1) Monte Carlo</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#temporal-difference-sarsa"><span class="nav-text">(2) Temporal Difference / SarSa</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#sarsa"><span class="nav-text">(1) SarSa</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#q-learning"><span class="nav-text">(2) Q-Learning</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#dqn"><span class="nav-text">(3) DQN</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dqn所做的改进"><span class="nav-text">2、DQN所做的改进</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三算法整体流程"><span class="nav-text">三、算法整体流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四epsilon-greedy策略"><span class="nav-text">四、\(\epsilon-greedy\)策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考资料"><span class="nav-text">参考资料：</span></a></li></ol></div>
             
 
           </div>
